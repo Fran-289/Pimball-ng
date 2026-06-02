@@ -1,0 +1,16 @@
+<!-- Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay" [class.active]="isSidebarOpenMobile" (click)="toggleSidebarMobile()"></div>
+
+<!-- Sidebar -->
+<app-sidebar [isOpenMobile]="isSidebarOpenMobile" [isCollapsed]="isSidebarCollapsed"></app-sidebar>
+
+<!-- Main Content -->
+<div class="main-content flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- Top Header -->
+  <app-header (toggleSidebar)="onToggleSidebar()"></app-header>
+
+  <!-- Router View -->
+  <main class="content-area flex-1 overflow-y-auto bg-bgMain relative">
+    <router-outlet></router-outlet>
+  </main>
+</div>

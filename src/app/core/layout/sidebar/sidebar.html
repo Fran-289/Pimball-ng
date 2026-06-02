@@ -1,0 +1,53 @@
+<aside class="sidebar-container bg-bgGlass border-r border-borderColor flex flex-col h-full shadow-2xl backdrop-blur-md transition-all duration-300"
+       [ngClass]="{
+         'w-[80px]': isCollapsed,
+         'w-[280px]': !isCollapsed,
+         'translate-x-0 absolute z-50': isOpenMobile,
+         '-translate-x-full absolute z-50 md:relative md:translate-x-0': !isOpenMobile
+       }">
+  <div class="sidebar-header flex items-center justify-center h-24 border-b border-borderColor">
+    <img src="mascot.png" class="w-10 h-10 object-contain animate-float-avatar" [ngClass]="{'mr-0': isCollapsed, 'mr-3': !isCollapsed}" alt="Mascot">
+    @if (!isCollapsed) {
+      <h2 class="text-2xl font-heading font-bold bg-clip-text text-transparent bg-gradient-to-r from-accentPrimary to-purple-400">PinballPro</h2>
+    }
+  </div>
+
+  <nav class="sidebar-nav flex-1 p-4 overflow-y-auto overflow-x-hidden">
+    <a routerLink="/dashboard" routerLinkActive="bg-accentPrimary/20 text-accentPrimary border-r-4 border-accentPrimary" class="nav-item flex items-center p-4 mb-2 rounded-lg text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-all" [ngClass]="{'justify-center px-0': isCollapsed}">
+      <i-lucide name="layout-dashboard" class="w-5 h-5 shrink-0" [ngClass]="{'mr-0': isCollapsed, 'mr-4': !isCollapsed}"></i-lucide>
+      @if (!isCollapsed) { <span class="font-semibold tracking-wide whitespace-nowrap">Dashboard</span> }
+    </a>
+    
+    <a routerLink="/inventory" routerLinkActive="bg-accentPrimary/20 text-accentPrimary border-r-4 border-accentPrimary" class="nav-item flex items-center p-4 mb-2 rounded-lg text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-all" [ngClass]="{'justify-center px-0': isCollapsed}">
+      <i-lucide name="package" class="w-5 h-5 shrink-0" [ngClass]="{'mr-0': isCollapsed, 'mr-4': !isCollapsed}"></i-lucide>
+      @if (!isCollapsed) { <span class="font-semibold tracking-wide whitespace-nowrap">Inventario</span> }
+    </a>
+
+    <a routerLink="/cuts" routerLinkActive="bg-accentPrimary/20 text-accentPrimary border-r-4 border-accentPrimary" class="nav-item flex items-center p-4 mb-2 rounded-lg text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-all" [ngClass]="{'justify-center px-0': isCollapsed}">
+      <i-lucide name="dollar-sign" class="w-5 h-5 shrink-0" [ngClass]="{'mr-0': isCollapsed, 'mr-4': !isCollapsed}"></i-lucide>
+      @if (!isCollapsed) { <span class="font-semibold tracking-wide whitespace-nowrap">Cortes</span> }
+    </a>
+
+    <a routerLink="/tickets" routerLinkActive="bg-accentPrimary/20 text-accentPrimary border-r-4 border-accentPrimary" class="nav-item flex items-center p-4 mb-2 rounded-lg text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-all" [ngClass]="{'justify-center px-0': isCollapsed}">
+      <i-lucide name="wrench" class="w-5 h-5 shrink-0" [ngClass]="{'mr-0': isCollapsed, 'mr-4': !isCollapsed}"></i-lucide>
+      @if (!isCollapsed) { <span class="font-semibold tracking-wide whitespace-nowrap">Reparaciones</span> }
+    </a>
+
+    @if (!isCollapsed) {
+      <div class="mt-8 mb-4 px-4 text-xs font-bold text-textSecondary uppercase tracking-wider">Sistema</div>
+    } @else {
+      <div class="mt-8 mb-4 border-b border-borderColor"></div>
+    }
+
+    <a routerLink="/backups" routerLinkActive="bg-accentPrimary/20 text-accentPrimary border-r-4 border-accentPrimary" class="nav-item flex items-center p-4 mb-2 rounded-lg text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-all" [ngClass]="{'justify-center px-0': isCollapsed}">
+      <i-lucide name="database-backup" class="w-5 h-5 shrink-0" [ngClass]="{'mr-0': isCollapsed, 'mr-4': !isCollapsed}"></i-lucide>
+      @if (!isCollapsed) { <span class="font-semibold tracking-wide whitespace-nowrap">Respaldos</span> }
+    </a>
+  </nav>
+
+  @if (!isCollapsed) {
+    <div class="sidebar-footer p-6 border-t border-borderColor text-center">
+      <p class="text-xs text-textSecondary">V2.0.0 &copy; 2026</p>
+    </div>
+  }
+</aside>

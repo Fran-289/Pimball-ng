@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply bg-bgMain text-textPrimary font-sans overflow-hidden h-screen w-screen m-0 p-0;
+  }
+  app-root {
+    @apply flex h-full w-full;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading font-semibold;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-bgGlass border border-borderColor rounded-2xl p-6 shadow-2xl backdrop-blur-md;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-5 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer border-none;
+  }
+  .btn-primary {
+    @apply bg-accentPrimary text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)];
+  }
+  .btn-primary:hover {
+    @apply bg-accentHover -translate-y-0.5;
+  }
+  .btn-icon {
+    @apply bg-transparent text-textSecondary p-2 rounded-full cursor-pointer transition-colors duration-200 border-none;
+  }
+  .btn-icon:hover {
+    @apply text-textPrimary bg-white/10;
+  }
+}

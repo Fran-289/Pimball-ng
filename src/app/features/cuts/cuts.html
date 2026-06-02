@@ -1,0 +1,147 @@
+<div class="p-6">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">Cortes (Recaudación)</h2>
+      <p class="text-textSecondary mt-2">Registra y calcula las ganancias por ubicación.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()">
+      <i-lucide name="plus-circle" class="w-5 h-5"></i-lucide>
+      Nuevo Corte
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-6">
+    @for (loc of groupedByLocation; track loc.locationId) {
+      <div class="glass-panel overflow-hidden">
+        <div class="bg-black/20 p-4 border-b border-borderColor flex justify-between items-center">
+          <h3 class="text-xl font-heading font-bold flex items-center gap-2">
+            <i-lucide name="map-pin" class="text-accentPrimary"></i-lucide> {{ loc.locationName }}
+          </h3>
+          <div class="text-sm font-semibold">
+            Ganancia Histórica: <span class="text-success">{{ loc.totalProfit | currency }}</span>
+          </div>
+        </div>
+
+        <div class="p-4">
+          @for (month of loc.months; track month.monthKey) {
+            <div class="mb-6 last:mb-0">
+              <div class="text-sm font-bold text-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-borderColor/30 pb-2">
+                <i-lucide name="calendar" class="w-4 h-4"></i-lucide> {{ month.monthName }}
+              </div>
+              
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm mb-3">
+                  <thead>
+                    <tr class="text-textSecondary">
+                      <th class="p-2 font-semibold">ID</th>
+                      <th class="p-2 font-semibold">Fecha</th>
+                      <th class="p-2 font-semibold">Próx. Corte</th>
+                      <th class="p-2 font-semibold">Subtotal</th>
+                      <th class="p-2 font-semibold">Gastos</th>
+                      <th class="p-2 font-semibold text-right">Ganancia (Tu parte)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (c of month.cuts; track c.id) {
+                      <tr class="border-b border-borderColor/20 hover:bg-white/5 transition-colors">
+                        <td class="p-2 font-semibold">{{ c.displayId || 'Corte' }}</td>
+                        <td class="p-2 text-textSecondary">{{ c.date | date:'shortDate' }}</td>
+                        <td class="p-2 text-textSecondary">{{ c.nextCutDate ? (c.nextCutDate | date:'shortDate') : '-' }}</td>
+                        <td class="p-2 text-textSecondary">{{ c.grossIncome | currency }}</td>
+                        <td class="p-2 text-danger">{{ c.expenses ? '-' + (c.expenses | currency) : '-' }}</td>
+                        <td class="p-2 text-success font-bold text-right">+{{ c.ownerProfit | currency }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                  <tfoot class="bg-white/5 border-t border-borderColor font-bold">
+                    <tr>
+                      <td colspan="3" class="p-2 text-right">Totales del Mes:</td>
+                      <td class="p-2">{{ month.totalGross | currency }}</td>
+                      <td class="p-2 text-danger">{{ month.totalExpenses ? '-' + (month.totalExpenses | currency) : '-' }}</td>
+                      <td class="p-2 text-success text-right">+{{ month.totalOwnerProfit | currency }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @empty {
+      <div class="glass-panel p-8 text-center text-textSecondary italic">
+        No hay cortes registrados. Haz clic en "Nuevo Corte" para agregar uno.
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-lg shadow-2xl scale-100 transition-transform max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center p-6 border-b border-borderColor sticky top-0 bg-bgSecondary z-10">
+        <h3 class="text-xl font-heading font-bold text-textPrimary">Registrar Nuevo Corte</h3>
+        <button class="btn-icon" (click)="closeModal()"><i-lucide name="x"></i-lucide></button>
+      </div>
+      
+      <form class="p-6 flex flex-col gap-4" (ngSubmit)="saveCut()">
+        <div>
+          <label class="block text-sm font-semibold text-textSecondary mb-2">Ubicación *</label>
+          <select [(ngModel)]="formCut.locationId" name="locationId" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+            @for (loc of locations; track loc.id) {
+              <option [value]="loc.id">{{ loc.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Fecha del Corte</label>
+            <input type="date" [(ngModel)]="formCut.date" name="date" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Fecha Siguiente Corte</label>
+            <input type="date" [(ngModel)]="formCut.nextCutDate" name="nextCutDate" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Subtotal ($) *</label>
+            <input type="number" step="0.01" [(ngModel)]="formCut.grossIncome" (ngModelChange)="calculateProfits()" name="grossIncome" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="0.00">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Gastos / Viáticos ($)</label>
+            <input type="number" step="0.01" [(ngModel)]="formCut.expenses" (ngModelChange)="calculateProfits()" name="expenses" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bgMain border border-borderColor flex flex-col gap-2 mt-2">
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-textSecondary">Ingreso Neto a Repartir:</span>
+            <span class="font-bold text-textPrimary">{{ formCut.netIncome | currency }}</span>
+          </div>
+          <div class="flex items-center gap-4 mt-2">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-textSecondary mb-1">Tu Porcentaje (%)</label>
+              <input type="number" [(ngModel)]="formCut.ownerPercentage" (ngModelChange)="calculateProfits()" name="ownerPercentage" min="0" max="100" class="w-full bg-bgSecondary border border-borderColor rounded px-3 py-2 text-textPrimary focus:outline-none">
+            </div>
+            <div class="flex-1 text-right">
+              <div class="text-xs text-textSecondary">Tu Ganancia</div>
+              <div class="text-lg font-bold text-success">{{ formCut.ownerProfit | currency }}</div>
+            </div>
+            <div class="flex-1 text-right">
+              <div class="text-xs text-textSecondary">Ganancia Local</div>
+              <div class="text-lg font-bold text-textPrimary">{{ formCut.locationProfit | currency }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end gap-3 pt-4 border-t border-borderColor">
+          <button type="button" class="btn bg-white/5 hover:bg-white/10 text-textPrimary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Corte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
