@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class Header implements OnInit {
   @Output() toggleSidebar = new EventEmitter<void>();
   isModalOpen = false;
+  isDarkMode = true;
   userProfile: any = {};
   editProfile: any = {};
 
@@ -21,10 +22,20 @@ export class Header implements OnInit {
 
   ngOnInit() {
     this.userProfile = this.dataService.getUserProfile();
+    this.isDarkMode = document.documentElement.classList.contains('dark');
   }
 
   onToggleSidebar() {
     this.toggleSidebar.emit();
+  }
+
+  toggleTheme() {
+    this.isDarkMode = !this.isDarkMode;
+    if (this.isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }
 
   openProfileModal() {

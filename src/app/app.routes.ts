@@ -4,6 +4,7 @@ import { Inventory } from './features/inventory/inventory';
 import { Cuts } from './features/cuts/cuts';
 import { Tickets } from './features/tickets/tickets';
 import { Backups } from './features/backups/backups';
+import { Audit } from './features/audit/audit';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'cuts', component: Cuts },
   { path: 'tickets', component: Tickets },
   { path: 'backups', component: Backups },
+  { path: 'audit', component: Audit },
   { path: '**', redirectTo: 'dashboard' }
 ];

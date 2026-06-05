@@ -1,7 +1,7 @@
 <div class="p-6">
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-      <h2 class="text-3xl font-heading font-bold text-textPrimary">Inventario de Máquinas</h2>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">Máquinas</h2>
       <p class="text-textSecondary mt-2">Gestiona todas las máquinas pinball y sus ubicaciones.</p>
     </div>
     <button class="btn btn-primary" (click)="openModal()">
@@ -10,86 +10,91 @@
     </button>
   </div>
 
-  <div class="glass-panel overflow-x-auto">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-borderColor text-textSecondary text-sm uppercase tracking-wider">
-          <th class="p-4 font-semibold">Máquina</th>
-          <th class="p-4 font-semibold">Ubicación</th>
-          <th class="p-4 font-semibold">Estado</th>
-          <th class="p-4 font-semibold text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (m of machines; track m.id) {
-          <tr class="border-b border-borderColor/50 hover:bg-white/5 transition-colors group">
-            <td class="p-4 flex flex-col md:flex-row items-start md:items-center gap-4">
-              @if (m.photo) {
-                <img [src]="m.photo" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:scale-110 transition-transform shadow-md" (click)="viewImage(m.photo)">
-              } @else {
-                <div class="w-16 h-16 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                  <i-lucide name="image" class="w-6 h-6 opacity-50"></i-lucide>
-                </div>
-              }
-              <div>
-                <strong class="text-textPrimary text-lg block">{{ m.id }} - {{ m.name }}</strong>
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                  <small class="text-textSecondary flex items-center gap-1">
-                    <i-lucide name="gamepad-2" class="w-3 h-3"></i-lucide> {{ m.type || 'N/A' }}
-                  </small>
-                  @if (m.installDate) {
-                    <small class="text-textSecondary flex items-center gap-1">
-                      <i-lucide name="calendar" class="w-3 h-3"></i-lucide> Inst.: {{ m.installDate | date:'shortDate' }}
-                    </small>
-                  }
-                  @if (m.estimatedCost) {
-                    <small class="text-textSecondary flex items-center gap-1 text-success">
-                      <i-lucide name="dollar-sign" class="w-3 h-3"></i-lucide> {{ m.estimatedCost | currency }}
-                    </small>
-                  }
-                </div>
-                @if (m.notes) {
-                  <div class="mt-2 text-xs text-warning flex items-start gap-1 max-w-sm leading-tight bg-warning/10 p-2 rounded border border-warning/30">
-                    <i-lucide name="alert-circle" class="w-3 h-3 shrink-0 mt-[2px]"></i-lucide>
-                    <em>{{ m.notes }}</em>
-                  </div>
-                }
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    @for (m of machines; track m.id) {
+      <div class="glass-panel p-5 relative overflow-hidden group hover:border-accentPrimary hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.3)] transition-all duration-300 flex flex-col">
+        <div class="absolute inset-0 bg-gradient-to-br from-accentPrimary/0 to-accentPrimary/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+        
+        <div class="flex justify-between items-start mb-4 relative z-10">
+          <div class="flex gap-3 items-center">
+            @if (m.photo) {
+              <img [src]="m.photo" class="w-12 h-12 rounded-lg object-cover cursor-pointer hover:scale-110 transition-transform shadow-md" (click)="viewImage(m.photo)">
+            } @else {
+              <div class="w-12 h-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                <i-lucide name="gamepad-2" class="w-6 h-6 text-textSecondary opacity-50"></i-lucide>
               </div>
-            </td>
-            <td class="p-4 text-textSecondary">
-              <div class="flex items-center gap-2">
-                <i-lucide name="map-pin" class="w-4 h-4"></i-lucide>
-                {{ getLocationName(m.locationId) }}
-              </div>
-            </td>
-            <td class="p-4">
-              <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border"
-                    [ngClass]="{
-                      'text-success border-success bg-success/10': m.status === 'active',
-                      'text-warning border-warning bg-warning/10': m.status === 'repair',
-                      'text-danger border-danger bg-danger/10': m.status === 'inactive'
-                    }">
-                {{ m.status === 'active' ? 'ACTIVA' : (m.status === 'repair' ? 'EN REPARACIÓN' : 'INACTIVA') }}
-              </span>
-            </td>
-            <td class="p-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
-              <button class="btn-icon mr-2" (click)="openModal(m)" title="Editar">
-                <i-lucide name="edit" class="w-4 h-4"></i-lucide>
-              </button>
-              <button class="btn-icon text-danger hover:text-danger hover:bg-danger/10" (click)="deleteMachine(m.id)" title="Eliminar">
-                <i-lucide name="trash-2" class="w-4 h-4"></i-lucide>
-              </button>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="4" class="p-8 text-center text-textSecondary italic">
-              No hay máquinas registradas. Haz clic en "Nueva Máquina" para empezar.
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+            }
+            <div>
+              <div class="text-xs font-bold text-accentPrimary tracking-wider uppercase mb-0.5">{{ m.id }}</div>
+              <h3 class="font-bold text-textPrimary text-lg leading-tight truncate max-w-[150px]" [title]="m.name">{{ m.name }}</h3>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <button class="btn-icon w-8 h-8 opacity-0 group-hover:opacity-100 bg-white/5 border border-white/10 hover:bg-accentPrimary/20 hover:text-accentPrimary hover:border-accentPrimary/30 transition-all shadow-sm" (click)="openModal(m)" title="Editar">
+              <i-lucide name="edit" class="w-3 h-3"></i-lucide>
+            </button>
+            <button class="btn-icon w-8 h-8 opacity-0 group-hover:opacity-100 bg-white/5 border border-white/10 hover:bg-danger/20 hover:text-danger hover:border-danger/30 transition-all shadow-sm" (click)="deleteMachine(m.id)" title="Eliminar (Solo inactiva)">
+              <i-lucide name="trash-2" class="w-3 h-3"></i-lucide>
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-3 relative z-10 flex-1">
+          <div class="flex items-center gap-2 text-sm text-textSecondary bg-black/20 p-2 rounded-lg border border-borderColor/30">
+            <div class="w-6 h-6 rounded bg-accentPrimary/20 flex items-center justify-center text-accentPrimary shrink-0">
+              <i-lucide name="map-pin" class="w-3 h-3"></i-lucide>
+            </div>
+            <span class="truncate" [title]="getLocationName(m.locationId)">{{ getLocationName(m.locationId) }}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-black/20 p-2 rounded-lg border border-borderColor/30">
+              <div class="text-textSecondary uppercase tracking-wide flex items-center gap-1 mb-1"><i-lucide name="package" class="w-3 h-3"></i-lucide> Tipo</div>
+              <div class="font-semibold text-textPrimary truncate">{{ m.type || 'N/A' }}</div>
+            </div>
+            <div class="bg-black/20 p-2 rounded-lg border border-borderColor/30">
+              <div class="text-textSecondary uppercase tracking-wide flex items-center gap-1 mb-1"><i-lucide name="calendar" class="w-3 h-3"></i-lucide> Instalada</div>
+              <div class="font-semibold text-textPrimary">{{ m.installDate ? (m.installDate | date:'dd/MM/yyyy') : '-' }}</div>
+            </div>
+          </div>
+
+          @if (m.estimatedCost) {
+            <div class="bg-success/5 p-2 rounded-lg border border-success/20 flex items-center justify-between">
+              <span class="text-xs text-success/80 font-bold uppercase tracking-wide">Costo Est.</span>
+              <span class="font-bold text-success">{{ m.estimatedCost | currency }}</span>
+            </div>
+          }
+
+          @if (m.notes) {
+            <div class="bg-warning/10 p-2 rounded-lg border border-warning/30 text-xs text-warning mt-2">
+              <div class="font-bold uppercase tracking-wide flex items-center gap-1 mb-1"><i-lucide name="alert-circle" class="w-3 h-3"></i-lucide> Nota</div>
+              <em class="line-clamp-2" [title]="m.notes">{{ m.notes }}</em>
+            </div>
+          }
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-borderColor/50 relative z-10 flex justify-between items-center">
+          <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border shadow-inner"
+                [ngClass]="{
+                  'text-success border-success/50 bg-success/10': m.status === 'active',
+                  'text-warning border-warning/50 bg-warning/10': m.status === 'repair',
+                  'text-danger border-danger/50 bg-danger/10': m.status === 'inactive'
+                }">
+            <span class="flex items-center gap-1">
+              <i-lucide [name]="m.status === 'active' ? 'check-circle' : (m.status === 'repair' ? 'wrench' : 'alert-circle')" class="w-3 h-3"></i-lucide>
+              {{ m.status === 'active' ? 'ACTIVA' : (m.status === 'repair' ? 'EN REPARACIÓN' : 'INACTIVA') }}
+            </span>
+          </span>
+        </div>
+      </div>
+    } @empty {
+      <div class="col-span-full glass-panel p-12 text-center text-textSecondary italic flex flex-col items-center justify-center">
+        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 text-accentPrimary opacity-50">
+          <i-lucide name="gamepad-2" class="w-8 h-8"></i-lucide>
+        </div>
+        No hay máquinas registradas en el sistema.<br>Haz clic en "Nueva Máquina" para empezar.
+      </div>
+    }
   </div>
 </div>
 
@@ -119,8 +124,8 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-textSecondary mb-2">Nombre / Modelo *</label>
-            <input type="text" [(ngModel)]="formMachine.name" name="name" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Ej. The Addams Family">
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Nombre / Modelo <span class="text-danger">*</span></label>
+            <input type="text" [ngModel]="formMachine.name" (ngModelChange)="formMachine.name = capitalizeFirst($event)" name="name" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Ej. The Addams Family">
           </div>
           
           <div>
@@ -142,8 +147,8 @@
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-textSecondary mb-2">Ubicación *</label>
-            <input type="text" [(ngModel)]="formMachine.locationName" name="locationName" list="locationsList" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Escribe o selecciona una ubicación">
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Ubicación <span class="text-danger">*</span></label>
+            <input type="text" [ngModel]="formMachine.locationName" (ngModelChange)="formMachine.locationName = capitalizeFirst($event)" name="locationName" list="locationsList" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Escribe o selecciona una ubicación">
             <datalist id="locationsList">
               @for (loc of locations; track loc.id) {
                 <option [value]="loc.name"></option>
@@ -154,7 +159,7 @@
 
           <div>
             <label class="block text-sm font-semibold text-textSecondary mb-2">Fecha de Instalación</label>
-            <input type="date" [(ngModel)]="formMachine.installDate" name="installDate" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+            <input type="date" [(ngModel)]="formMachine.installDate" name="installDate" max="2099-12-31" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
           </div>
 
           <div>
@@ -173,7 +178,7 @@
 
         <div>
           <label class="block text-sm font-semibold text-textSecondary mb-2">Notas (Opcional)</label>
-          <textarea [(ngModel)]="formMachine.notes" name="notes" rows="2" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Alguna observación especial..."></textarea>
+          <textarea [ngModel]="formMachine.notes" (ngModelChange)="formMachine.notes = capitalizeFirst($event)" name="notes" rows="2" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Alguna observación especial..."></textarea>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-borderColor">

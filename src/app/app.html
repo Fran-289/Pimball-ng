@@ -2,7 +2,7 @@
 <div class="sidebar-overlay" id="sidebar-overlay" [class.active]="isSidebarOpenMobile" (click)="toggleSidebarMobile()"></div>
 
 <!-- Sidebar -->
-<app-sidebar [isOpenMobile]="isSidebarOpenMobile" [isCollapsed]="isSidebarCollapsed"></app-sidebar>
+<app-sidebar [isOpenMobile]="isSidebarOpenMobile" [isCollapsed]="isSidebarCollapsed" (linkClicked)="isSidebarOpenMobile = false"></app-sidebar>
 
 <!-- Main Content -->
 <div class="main-content flex-1 flex flex-col h-screen overflow-hidden">

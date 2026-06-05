@@ -3,8 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-main: #f1f5f9;
+    --bg-sec: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.7);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --text-pri: #0f172a;
+    --text-sec: #475569;
+  }
+  .dark {
+    --bg-main: #0f111a;
+    --bg-sec: #1a1d2d;
+    --bg-glass: rgba(26, 29, 45, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-pri: #f8fafc;
+    --text-sec: #94a3b8;
+  }
   html, body {
-    @apply bg-bgMain text-textPrimary font-sans overflow-hidden h-screen w-screen m-0 p-0;
+    @apply font-sans overflow-hidden h-screen w-screen m-0 p-0 transition-colors duration-300;
+    background-color: var(--bg-main);
+    color: var(--text-pri);
   }
   app-root {
     @apply flex h-full w-full;

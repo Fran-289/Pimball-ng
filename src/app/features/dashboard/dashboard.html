@@ -4,7 +4,7 @@
     <p class="text-textSecondary mt-2">Métricas y actividad reciente de tus máquinas pinball.</p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.5)] hover:border-accentPrimary transition-all duration-300 relative overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/0 via-accentPrimary/5 to-accentPrimary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
       <div>
@@ -16,14 +16,14 @@
       </div>
     </div>
 
-    <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.5)] hover:border-success transition-all duration-300 relative overflow-hidden">
+    <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.5)] hover:border-success transition-all duration-300 relative overflow-hidden" routerLink="/cuts">
       <div class="absolute inset-0 bg-gradient-to-r from-success/0 via-success/5 to-success/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
       <div>
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-xs mb-1 group-hover:text-success transition-colors">Recaudación</div>
-        <div class="text-3xl font-bold text-success">{{ statRevenue | currency }}</div>
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-xs mb-1 group-hover:text-success transition-colors">Ubicaciones Activas</div>
+        <div class="text-3xl font-bold text-success">{{ statLocations }}</div>
       </div>
       <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success group-hover:scale-110 group-hover:bg-success group-hover:text-white transition-all">
-        <i-lucide name="dollar-sign"></i-lucide>
+        <i-lucide name="map-pin"></i-lucide>
       </div>
     </div>
 
@@ -40,46 +40,145 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 glass-panel flex flex-col items-center justify-center min-h-[300px] text-textSecondary text-center">
-      <i-lucide name="bar-chart-2" class="w-16 h-16 opacity-20 mb-4"></i-lucide>
-      <h3 class="text-xl font-heading font-semibold text-textPrimary">Gráfica de Recaudación</h3>
-      <p class="mt-2 text-sm max-w-sm">Los datos de recaudación estarán disponibles aquí pronto.</p>
+    <!-- Panel 1: Próximos Cortes -->
+    <div class="glass-panel shadow-[inset_0_2px_4px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.4)] border-t border-white/5 relative overflow-hidden h-[400px] flex flex-col p-0">
+      <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+      
+      <div class="px-6 pt-6 pb-4 border-b border-borderColor/50 relative z-10 shrink-0">
+        <h3 class="text-lg font-heading font-bold text-textPrimary flex items-center gap-3 drop-shadow-md">
+          <div class="p-2 bg-warning/20 rounded-lg shadow-inner">
+            <i-lucide name="calendar-clock" class="text-warning w-4 h-4"></i-lucide>
+          </div>
+          Próximos Cortes
+        </h3>
+      </div>
+      
+      <div class="p-6 pt-4 flex-1 flex flex-col gap-3 relative z-10 overflow-y-auto custom-scrollbar">
+        @for (uc of upcomingCuts; track uc.locationId) {
+          <div class="p-3 rounded-xl bg-black/20 border border-borderColor/50 hover:border-warning hover:-translate-y-1 transition-all flex justify-between items-center group shadow-sm flex-wrap sm:flex-nowrap gap-3 shrink-0">
+            <div class="flex items-center gap-3">
+               <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-inner bg-warning/10 text-warning group-hover:bg-warning group-hover:text-white transition-colors">
+                 <i-lucide name="map-pin" class="w-4 h-4"></i-lucide>
+               </div>
+               <div>
+                 <div class="font-bold text-textPrimary text-sm lg:text-base truncate max-w-[150px]">{{ uc.locationName }}</div>
+                 <div class="text-[10px] text-textSecondary">Sig. cobro</div>
+               </div>
+            </div>
+            <div class="shrink-0 bg-warning/10 border border-warning/30 px-2 py-1 rounded-lg">
+              <div class="font-bold text-warning text-sm drop-shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i-lucide name="calendar" class="w-3.5 h-3.5"></i-lucide> {{ uc.nextCutDate | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="flex h-full flex-col items-center justify-center py-10 opacity-60">
+            <i-lucide name="calendar-check" class="w-12 h-12 text-textSecondary mb-4"></i-lucide>
+            <p class="text-sm text-textSecondary italic text-center">No hay próximos cortes.</p>
+          </div>
+        }
+      </div>
     </div>
 
-    <div class="glass-panel">
-      <h3 class="text-xl font-heading font-bold text-textPrimary mb-6 flex items-center gap-2">
-        <i-lucide name="activity" class="text-accentPrimary"></i-lucide>
-        Actividad Reciente
-      </h3>
-      <div class="flex flex-col gap-4">
+    <!-- Panel 2: Actividad Reciente -->
+    <div class="glass-panel shadow-[inset_0_2px_4px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.4)] border-t border-white/5 relative overflow-hidden h-[400px] flex flex-col p-0">
+      <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+      
+      <div class="px-6 pt-6 pb-4 border-b border-borderColor/50 relative z-10 shrink-0">
+        <h3 class="text-lg font-heading font-bold text-textPrimary flex items-center gap-3 drop-shadow-md">
+          <div class="p-2 bg-accentPrimary/20 rounded-lg shadow-inner">
+            <i-lucide name="activity" class="text-accentPrimary w-4 h-4"></i-lucide>
+          </div>
+          Actividad Reciente
+        </h3>
+      </div>
+      
+      <div class="p-6 pt-4 flex-1 flex flex-col gap-3 relative z-10 overflow-y-auto custom-scrollbar">
         @for (item of recentActivity; track item.id) {
-          <div class="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-accentPrimary hover:-translate-y-1 transition-all flex justify-between items-center cursor-pointer">
-            <div>
-              <div class="font-bold flex items-center gap-2" [ngClass]="item.type === 'cut' ? 'text-success' : 'text-textPrimary'">
-                <i-lucide [name]="item.type === 'cut' ? 'dollar-sign' : 'wrench'" class="w-4 h-4"></i-lucide>
-                {{ item.type === 'cut' ? 'Nuevo ingreso de ' + getLocationName(item.locationId) : 'Ticket: ' + item.title }}
+          <div class="p-4 rounded-xl bg-bgMain/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.2)] border border-borderColor/50 hover:border-accentPrimary hover:-translate-y-1 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_10px_20px_-5px_rgba(99,102,241,0.3)] transition-all flex justify-between items-center cursor-pointer group shrink-0">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-inner" [ngClass]="item.type === 'cut' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'">
+                <i-lucide [name]="item.type === 'cut' ? 'dollar-sign' : 'wrench'" class="w-5 h-5"></i-lucide>
               </div>
-              <div class="text-xs text-textSecondary mt-1">
-                {{ item.type === 'cut' ? (item.displayId || 'Corte') + ' - ' + (item.date | date) : 'Máquina: ' + getMachineName(item.machineId) + ' | Creado: ' + (item.createdAt | date) }}
+              <div>
+                <div class="font-bold flex items-center gap-2 group-hover:text-accentPrimary transition-colors" [ngClass]="item.type === 'cut' ? 'text-success drop-shadow-sm' : 'text-textPrimary'">
+                  {{ item.type === 'cut' ? 'Ingreso: ' + getLocationName(item.locationId) : 'Ticket: ' + item.title }}
+                </div>
+                <div class="text-xs text-textSecondary mt-1 font-medium">
+                  {{ item.type === 'cut' ? (item.displayId || 'Corte') + ' • ' + (item.date | date:'shortDate') : 'MQ: ' + getMachineName(item.machineId) + ' • ' + (item.createdAt | date:'shortDate') }}
+                </div>
               </div>
             </div>
             @if (item.type === 'cut') {
-              <div class="font-bold text-lg text-success drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+              <div class="font-bold text-lg text-success drop-shadow-[0_0_8px_rgba(16,185,129,0.5)] shrink-0 pl-2">
                 +{{ item.ownerProfit | currency }}
               </div>
             } @else {
-              <div class="text-[10px] font-bold uppercase px-2 py-1 rounded border"
+              <div class="text-[10px] font-bold uppercase px-2 py-1 rounded shadow-inner shrink-0 ml-2"
                    [ngClass]="{
-                     'text-danger border-danger': item.status === 'open',
-                     'text-warning border-warning': item.status === 'progress',
-                     'text-success border-success': item.status === 'closed'
+                     'bg-danger/10 text-danger border border-danger/30': item.status === 'open',
+                     'bg-warning/10 text-warning border border-warning/30': item.status === 'progress',
+                     'bg-success/10 text-success border border-success/30': item.status === 'closed'
                    }">
-                {{ item.status === 'open' ? 'Abierto' : item.status === 'progress' ? 'En progreso' : 'Cerrado' }}
+                {{ item.status === 'open' ? 'Abierto' : item.status === 'progress' ? 'Progreso' : 'Cerrado' }}
               </div>
             }
           </div>
         } @empty {
-          <p class="text-sm text-textSecondary italic text-center py-4">Aún no hay actividad registrada.</p>
+          <p class="text-sm text-textSecondary italic text-center py-8 opacity-60">Aún no hay actividad registrada.</p>
+        }
+      </div>
+    </div>
+
+    <!-- Panel 3: Gráfica de Recaudación (Real) -->
+    <div class="glass-panel relative overflow-hidden group shadow-[inset_0_2px_4px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.4)] border-t border-white/5 h-[400px] flex flex-col p-0">
+      <div class="absolute -top-32 -right-32 w-64 h-64 bg-accentPrimary/10 rounded-full blur-3xl group-hover:bg-accentPrimary/20 transition-all duration-700"></div>
+      
+      <div class="px-6 pt-6 pb-4 border-b border-borderColor/50 relative z-10 shrink-0">
+        <h3 class="text-lg font-heading font-bold text-textPrimary flex items-center gap-3 drop-shadow-md">
+          <div class="p-2 bg-success/20 rounded-lg shadow-inner">
+            <i-lucide name="bar-chart-2" class="text-success w-4 h-4"></i-lucide>
+          </div>
+          Recaudación (6 Meses)
+        </h3>
+      </div>
+
+      <div class="p-6 pt-10 flex-1 relative z-10 flex items-end justify-between gap-2 overflow-visible">
+        
+        <!-- Grid Lines -->
+        <div class="absolute inset-x-6 top-10 bottom-6 flex flex-col justify-between pointer-events-none z-0 opacity-30">
+           <div class="w-full border-t border-dashed border-borderColor"></div>
+           <div class="w-full border-t border-dashed border-borderColor"></div>
+           <div class="w-full border-t border-dashed border-borderColor"></div>
+           <div class="w-full border-t border-solid border-borderColor"></div>
+        </div>
+
+        @for (item of chartData; track item.label) {
+          <div class="flex flex-col items-center gap-2 flex-1 group/bar h-full justify-end cursor-pointer">
+            <div class="relative w-full flex justify-center h-full items-end z-10">
+              
+              <!-- Background Track -->
+              <div class="absolute inset-x-0 bottom-0 h-full w-full max-w-[35px] mx-auto bg-black/20 border border-white/5 rounded-t-lg z-0 transition-colors group-hover/bar:bg-black/30"></div>
+              
+              <!-- Tooltip (visible on hover) -->
+              <div class="absolute bottom-full mb-2 bg-success text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_4px_15px_rgba(16,185,129,0.5)] opacity-0 group-hover/bar:opacity-100 group-hover/bar:-translate-y-2 transition-all duration-300 whitespace-nowrap z-50 pointer-events-none">
+                {{ item.value | currency }}
+                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-success rotate-45"></div>
+              </div>
+              
+              <!-- Bar -->
+              <div class="w-full max-w-[35px] bg-gradient-to-t from-success/30 via-success/70 to-success rounded-t-lg transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover/bar:from-success/50 group-hover/bar:via-success/80 group-hover/bar:to-success group-hover/bar:shadow-[0_0_25px_rgba(16,185,129,0.6)] z-10 relative overflow-hidden" [style.height.%]="item.heightPercentage || 5">
+                <div class="absolute top-0 inset-x-0 h-2 bg-white/30 rounded-t-lg"></div>
+              </div>
+
+            </div>
+            <div class="text-[10px] font-bold text-textSecondary mt-2 z-10 group-hover/bar:text-success transition-colors">{{ item.label }}</div>
+          </div>
+        } @empty {
+          <div class="w-full h-full flex flex-col items-center justify-center text-textSecondary opacity-60 z-10 relative">
+            <i-lucide name="bar-chart-2" class="w-10 h-10 mb-2"></i-lucide>
+            <span class="text-xs">Sin datos recientes</span>
+          </div>
         }
       </div>
     </div>

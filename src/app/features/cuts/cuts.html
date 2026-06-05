@@ -10,69 +10,308 @@
     </button>
   </div>
 
-  <div class="flex flex-col gap-6">
-    @for (loc of groupedByLocation; track loc.locationId) {
+  <!-- Cards View (Default) -->
+  @if (!activeLocation) {
+    <!-- Global Summaries -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Mensual General -->
+      <div class="glass-panel p-6 border-l-4 border-l-accentPrimary relative overflow-hidden group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.3)] hover:border-accentPrimary transition-all duration-300 cursor-pointer">
+        <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/5 to-transparent group-hover:from-accentPrimary/10 transition-colors"></div>
+        <div class="relative z-10 flex justify-between items-start mb-2">
+          <h3 class="text-textSecondary font-bold uppercase tracking-wider text-sm flex items-center gap-2">
+            <i-lucide name="calendar" class="w-4 h-4"></i-lucide> Mes Actual ({{ currentMonthName }})
+          </h3>
+          <div class="w-8 h-8 rounded-full bg-accentPrimary/20 flex items-center justify-center text-accentPrimary">
+            <i-lucide name="bar-chart-2" class="w-4 h-4"></i-lucide>
+          </div>
+        </div>
+        <div class="relative z-10 grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal Bruto</div>
+            <div class="text-xl font-bold text-textPrimary">{{ globalMonthGross | currency }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-success/80 uppercase font-semibold">Tu Ganancia</div>
+            <div class="text-3xl font-bold text-success drop-shadow-sm">+{{ globalMonthProfit | currency }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historico General -->
+      <div class="glass-panel p-6 border-l-4 border-l-purple-500 relative overflow-hidden group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(168,85,247,0.3)] hover:border-purple-500 transition-all duration-300 cursor-pointer">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent group-hover:from-purple-500/10 transition-colors"></div>
+        <div class="relative z-10 flex justify-between items-start mb-2">
+          <h3 class="text-textSecondary font-bold uppercase tracking-wider text-sm flex items-center gap-2">
+            <i-lucide name="activity" class="w-4 h-4"></i-lucide> Histórico General
+          </h3>
+          <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+            <i-lucide name="database-backup" class="w-4 h-4"></i-lucide>
+          </div>
+        </div>
+        <div class="relative z-10 grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <div class="text-[10px] text-textSecondary uppercase font-semibold">Total Subtotal</div>
+            <div class="text-xl font-bold text-textPrimary">{{ globalTotalGross | currency }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia Total</div>
+            <div class="text-3xl font-bold text-success drop-shadow-sm">+{{ globalTotalProfit | currency }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ubicaciones -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (loc of groupedByLocation; track loc.locationId) {
+        <div class="glass-panel p-6 cursor-pointer hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.3)] hover:border-accentPrimary transition-all duration-300 relative overflow-hidden group" (click)="viewLocationHistory(loc)">
+          <div class="absolute inset-0 bg-gradient-to-br from-accentPrimary/0 to-accentPrimary/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+          
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-heading font-bold flex items-center gap-2 text-textPrimary">
+              <i-lucide name="map-pin" class="text-accentPrimary w-5 h-5"></i-lucide> {{ loc.locationName }}
+            </h3>
+            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-textSecondary group-hover:bg-accentPrimary group-hover:text-white transition-colors">
+              <i-lucide name="calendar" class="w-5 h-5"></i-lucide>
+            </div>
+          </div>
+          
+          <div class="space-y-4 relative z-10">
+            <div>
+              <div class="text-xs text-textSecondary uppercase tracking-wider font-semibold mb-1">Ganancia Histórica</div>
+              <div class="text-2xl font-bold text-success">{{ loc.totalProfit | currency }}</div>
+            </div>
+            
+            <div class="bg-black/20 p-3 rounded-lg border border-borderColor/50">
+              <div class="text-xs text-textSecondary font-semibold mb-2">Último Corte</div>
+              @if (loc.lastCut) {
+                <div class="flex justify-between items-center text-sm">
+                  <span>{{ loc.lastCut.date | date:'dd/MM/yyyy' }}</span>
+                  <span class="font-bold text-textPrimary">{{ loc.lastCut.grossIncome | currency }}</span>
+                </div>
+              } @else {
+                <div class="text-sm italic text-textSecondary">Sin cortes registrados</div>
+              }
+            </div>
+
+            @if (loc.nextCutDate) {
+              <div class="flex items-center gap-2 text-sm text-warning font-semibold bg-warning/10 p-2 rounded border border-warning/30">
+                <i-lucide name="alert-circle" class="w-4 h-4"></i-lucide> Siguiente: {{ loc.nextCutDate | date:'dd/MM/yyyy' }}
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="col-span-full glass-panel p-8 text-center text-textSecondary italic">
+          No hay cortes registrados. Haz clic en "Nuevo Corte" para empezar.
+        </div>
+      }
+    </div>
+
+    @if (globalMonths.length > 0) {
+      <!-- Historial Mensual Global -->
+      <div class="mt-12 mb-6 border-b border-borderColor/50 pb-3 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-accentPrimary">
+          <i-lucide name="calendar-clock" class="w-5 h-5"></i-lucide>
+        </div>
+        <div>
+          <h3 class="text-2xl font-heading font-bold text-textPrimary">Historial Mensual Global</h3>
+          <p class="text-sm text-textSecondary">Totales sumados de todas las ubicaciones mes a mes.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @for (gm of globalMonths; track gm.monthKey) {
+          <div class="glass-panel p-5 border border-borderColor/50 hover:-translate-y-1 hover:border-accentPrimary hover:shadow-[0_4px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-300 cursor-default group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-accentPrimary/0 to-accentPrimary/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+            
+            <div class="relative z-10 flex justify-between items-center mb-3">
+              <div class="text-sm font-bold text-textSecondary uppercase tracking-wider flex items-center gap-2">
+                <i-lucide name="calendar" class="w-4 h-4"></i-lucide> {{ gm.monthName }}
+              </div>
+            </div>
+            
+            <div class="relative z-10 grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-white/5">
+              <div>
+                <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                <div class="font-bold text-textPrimary">{{ gm.totalGross | currency }}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                <div class="font-bold text-success text-lg drop-shadow-sm">{{ gm.totalOwnerProfit | currency }}</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (globalYears.length > 0) {
+      <!-- Historial Anual Global -->
+      <div class="mt-12 mb-6 border-b border-borderColor/50 pb-3 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-success">
+          <i-lucide name="calendar-days" class="w-5 h-5"></i-lucide>
+        </div>
+        <div>
+          <h3 class="text-2xl font-heading font-bold text-textPrimary">Historial Anual Global</h3>
+          <p class="text-sm text-textSecondary">Totales sumados de todas las ubicaciones por año.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+        @for (gy of globalYears; track gy.year) {
+          <div class="glass-panel p-5 border border-borderColor/50 hover:-translate-y-1 hover:border-success hover:shadow-[0_4px_20px_-5px_rgba(16,185,129,0.2)] transition-all duration-300 cursor-default group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-success/0 to-success/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+            
+            <div class="relative z-10 flex justify-between items-center mb-3">
+              <div class="text-sm font-bold text-textSecondary uppercase tracking-wider flex items-center gap-2">
+                <i-lucide name="calendar" class="w-4 h-4"></i-lucide> Año {{ gy.year }}
+              </div>
+            </div>
+            
+            <div class="relative z-10 grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-white/5">
+              <div>
+                <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                <div class="font-bold text-textPrimary">{{ gy.totalGross | currency }}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                <div class="font-bold text-success text-lg drop-shadow-sm">{{ gy.totalOwnerProfit | currency }}</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- Detail View (Active Location) -->
+  @if (activeLocation) {
+    <div class="flex flex-col gap-6 animate-in slide-in-from-right-8 duration-300">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+        <button class="btn bg-white/5 hover:bg-white/10 text-textPrimary border border-white/10" (click)="backToCards()">
+          <i-lucide name="arrow-left" class="w-4 h-4 mr-2"></i-lucide> Volver al Listado
+        </button>
+        <div class="flex items-center gap-3">
+          <button class="btn border border-danger/30 text-danger hover:bg-danger hover:text-white transition-colors" (click)="deleteLocation(activeLocation.locationId)">
+            <i-lucide name="trash-2" class="w-4 h-4 mr-2"></i-lucide> Eliminar Ubicación
+          </button>
+          <button class="btn btn-primary" (click)="openLocationSpecificModal(activeLocation.locationId)">
+            <i-lucide name="plus-circle" class="w-5 h-5 mr-2"></i-lucide> Nuevo Corte Aquí
+          </button>
+        </div>
+      </div>
+
       <div class="glass-panel overflow-hidden">
         <div class="bg-black/20 p-4 border-b border-borderColor flex justify-between items-center">
-          <h3 class="text-xl font-heading font-bold flex items-center gap-2">
-            <i-lucide name="map-pin" class="text-accentPrimary"></i-lucide> {{ loc.locationName }}
+          <h3 class="text-2xl font-heading font-bold flex items-center gap-2">
+            <i-lucide name="map-pin" class="text-accentPrimary"></i-lucide> {{ activeLocation.locationName }}
           </h3>
           <div class="text-sm font-semibold">
-            Ganancia Histórica: <span class="text-success">{{ loc.totalProfit | currency }}</span>
+            Ganancia Histórica: <span class="text-success">{{ activeLocation.totalProfit | currency }}</span>
           </div>
         </div>
 
         <div class="p-4">
-          @for (month of loc.months; track month.monthKey) {
-            <div class="mb-6 last:mb-0">
+          @for (month of activeLocation.months; track month.monthKey) {
+            <div class="mb-8 last:mb-0">
               <div class="text-sm font-bold text-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-borderColor/30 pb-2">
                 <i-lucide name="calendar" class="w-4 h-4"></i-lucide> {{ month.monthName }}
               </div>
               
-              <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm mb-3">
-                  <thead>
-                    <tr class="text-textSecondary">
-                      <th class="p-2 font-semibold">ID</th>
-                      <th class="p-2 font-semibold">Fecha</th>
-                      <th class="p-2 font-semibold">Próx. Corte</th>
-                      <th class="p-2 font-semibold">Subtotal</th>
-                      <th class="p-2 font-semibold">Gastos</th>
-                      <th class="p-2 font-semibold text-right">Ganancia (Tu parte)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (c of month.cuts; track c.id) {
-                      <tr class="border-b border-borderColor/20 hover:bg-white/5 transition-colors">
-                        <td class="p-2 font-semibold">{{ c.displayId || 'Corte' }}</td>
-                        <td class="p-2 text-textSecondary">{{ c.date | date:'shortDate' }}</td>
-                        <td class="p-2 text-textSecondary">{{ c.nextCutDate ? (c.nextCutDate | date:'shortDate') : '-' }}</td>
-                        <td class="p-2 text-textSecondary">{{ c.grossIncome | currency }}</td>
-                        <td class="p-2 text-danger">{{ c.expenses ? '-' + (c.expenses | currency) : '-' }}</td>
-                        <td class="p-2 text-success font-bold text-right">+{{ c.ownerProfit | currency }}</td>
-                      </tr>
-                    }
-                  </tbody>
-                  <tfoot class="bg-white/5 border-t border-borderColor font-bold">
-                    <tr>
-                      <td colspan="3" class="p-2 text-right">Totales del Mes:</td>
-                      <td class="p-2">{{ month.totalGross | currency }}</td>
-                      <td class="p-2 text-danger">{{ month.totalExpenses ? '-' + (month.totalExpenses | currency) : '-' }}</td>
-                      <td class="p-2 text-success text-right">+{{ month.totalOwnerProfit | currency }}</td>
-                    </tr>
-                  </tfoot>
-                </table>
+              <div class="flex flex-col gap-4">
+                @for (c of month.cuts; track c.id) {
+                  <div class="glass-panel p-4 relative overflow-hidden group border border-borderColor/50 hover:border-accentPrimary transition-all">
+                    <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/0 to-accentPrimary/5 translate-x-[-100%] group-hover:translate-x-[0%] transition-transform duration-500"></div>
+                    
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-accentPrimary/20 text-accentPrimary flex items-center justify-center border border-accentPrimary/30 shadow-inner">
+                          <i-lucide name="file-spreadsheet" class="w-5 h-5"></i-lucide>
+                        </div>
+                        <div>
+                          <div class="font-bold text-textPrimary text-lg flex items-center gap-2">
+                            {{ c.displayId || 'Corte' }}
+                          </div>
+                          <div class="text-xs text-textSecondary flex items-center gap-1 font-medium mt-0.5">
+                            <i-lucide name="calendar" class="w-3 h-3"></i-lucide> {{ c.date | date:'dd/MM/yyyy' }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex gap-2">
+                        <button class="btn-icon bg-white/5 border border-white/10 hover:bg-accentPrimary/20 hover:text-accentPrimary hover:border-accentPrimary/30 transition-all shadow-sm" title="Editar Corte" (click)="editCut(c)">
+                          <i-lucide name="edit" class="w-4 h-4"></i-lucide>
+                        </button>
+                        <button class="btn-icon border transition-all shadow-sm" 
+                                [ngClass]="canDeleteCut(c) ? 'bg-white/5 border-white/10 hover:bg-danger/20 hover:text-danger hover:border-danger/30' : 'bg-transparent border-transparent opacity-30 cursor-not-allowed'" 
+                                [title]="canDeleteCut(c) ? 'Eliminar Corte' : 'El corte debe llegar a cero para poder eliminarse'" 
+                                (click)="deleteCut(c)">
+                          <i-lucide name="trash-2" class="w-4 h-4"></i-lucide>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 relative z-10">
+                      <div class="bg-black/20 rounded-lg p-3 border border-borderColor/30 flex flex-col justify-center">
+                        <div class="text-[11px] text-textSecondary mb-1 font-bold uppercase tracking-wide flex items-center gap-1.5"><i-lucide name="calendar-clock" class="w-3 h-3 text-warning"></i-lucide> Próx. Corte</div>
+                        <div class="font-semibold text-sm">{{ c.nextCutDate ? (c.nextCutDate | date:'dd/MM/yyyy') : '-' }}</div>
+                      </div>
+                      
+                      <div class="bg-black/20 rounded-lg p-3 border border-borderColor/30">
+                        <div class="text-[11px] text-textSecondary mb-1 font-bold uppercase tracking-wide flex items-center gap-1.5"><i-lucide name="dollar-sign" class="w-3 h-3 text-textPrimary"></i-lucide> Subtotal</div>
+                        <div class="font-bold text-textPrimary">{{ c.grossIncome | currency }}</div>
+                        @if (c.machineDetails && c.machineDetails.length > 0) {
+                          <div class="text-[10px] text-textSecondary mt-1 space-y-1">
+                            @for (md of c.machineDetails; track md.machineId) {
+                              <div class="flex justify-between items-center border-t border-white/5 pt-1 mt-1">
+                                <span class="truncate pr-2 opacity-70">{{ getMachineName(md.machineId) }}</span>
+                                <span class="text-success font-medium">{{ md.amount | currency }}</span>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+
+                      <div class="bg-black/20 rounded-lg p-3 border border-borderColor/30 flex flex-col justify-center">
+                        <div class="text-[11px] text-textSecondary mb-1 font-bold uppercase tracking-wide flex items-center gap-1.5"><i-lucide name="trending-down" class="w-3 h-3 text-danger"></i-lucide> Gastos</div>
+                        <div class="font-semibold text-danger">{{ c.expenses ? '-' + (c.expenses | currency) : '-' }}</div>
+                      </div>
+
+                      <div class="bg-success/5 rounded-lg p-3 border border-success/20 flex flex-col justify-center">
+                        <div class="text-[11px] text-success/80 mb-1 font-bold uppercase tracking-wide flex items-center gap-1.5"><i-lucide name="trending-up" class="w-3 h-3 text-success"></i-lucide> Tu Ganancia</div>
+                        <div class="font-bold text-xl text-success drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">+{{ c.ownerProfit | currency }}</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="mt-4 bg-gradient-to-r from-bgSecondary to-bgMain border border-borderColor/80 rounded-xl p-5 flex flex-col md:flex-row justify-between items-center gap-4 font-bold shadow-inner relative overflow-hidden">
+                <div class="absolute inset-0 bg-white/5 pointer-events-none"></div>
+                <div class="text-textSecondary uppercase tracking-wider text-sm flex items-center gap-2 relative z-10">
+                  <i-lucide name="activity" class="w-4 h-4"></i-lucide> Totales del Mes
+                </div>
+                <div class="flex flex-wrap justify-center items-center gap-6 text-sm relative z-10">
+                  <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-textSecondary uppercase">Subtotal</span>
+                    <span class="text-textPrimary">{{ month.totalGross | currency }}</span>
+                  </div>
+                  <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-textSecondary uppercase">Gastos</span>
+                    <span class="text-danger">{{ month.totalExpenses ? '-' + (month.totalExpenses | currency) : '$0.00' }}</span>
+                  </div>
+                  <div class="flex flex-col items-end pl-4 border-l border-borderColor/50">
+                    <span class="text-[10px] text-success/80 uppercase">Ganancia Total</span>
+                    <span class="text-xl text-success drop-shadow-sm">+{{ month.totalOwnerProfit | currency }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           }
         </div>
       </div>
-    } @empty {
-      <div class="glass-panel p-8 text-center text-textSecondary italic">
-        No hay cortes registrados. Haz clic en "Nuevo Corte" para agregar uno.
-      </div>
-    }
-  </div>
+    </div>
+  }
 </div>
 
 <!-- Modal -->
@@ -80,14 +319,16 @@
   <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-lg shadow-2xl scale-100 transition-transform max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center p-6 border-b border-borderColor sticky top-0 bg-bgSecondary z-10">
-        <h3 class="text-xl font-heading font-bold text-textPrimary">Registrar Nuevo Corte</h3>
+        <h3 class="text-xl font-heading font-bold text-textPrimary">
+          {{ isEditMode ? 'Editar Corte Existente' : 'Registrar Nuevo Corte' }}
+        </h3>
         <button class="btn-icon" (click)="closeModal()"><i-lucide name="x"></i-lucide></button>
       </div>
       
       <form class="p-6 flex flex-col gap-4" (ngSubmit)="saveCut()">
         <div>
-          <label class="block text-sm font-semibold text-textSecondary mb-2">Ubicación *</label>
-          <select [(ngModel)]="formCut.locationId" name="locationId" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+          <label class="block text-sm font-semibold text-textSecondary mb-2">Ubicación <span class="text-danger">*</span></label>
+          <select [(ngModel)]="formCut.locationId" (ngModelChange)="onLocationChange()" name="locationId" required [disabled]="isEditMode" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors disabled:opacity-50">
             @for (loc of locations; track loc.id) {
               <option [value]="loc.id">{{ loc.name }}</option>
             }
@@ -97,18 +338,45 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-textSecondary mb-2">Fecha del Corte</label>
-            <input type="date" [(ngModel)]="formCut.date" name="date" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+            <input type="date" [(ngModel)]="formCut.date" name="date" max="2099-12-31" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-textSecondary mb-2">Fecha Siguiente Corte</label>
-            <input type="date" [(ngModel)]="formCut.nextCutDate" name="nextCutDate" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
+            <label class="block text-sm font-semibold text-textSecondary mb-2 text-accentPrimary">Siguiente Corte <span class="text-danger">*</span></label>
+            <input type="date" [(ngModel)]="formCut.nextCutDate" name="nextCutDate" max="2099-12-31" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors border-accentPrimary/50">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <!-- Dynamic Machine Inputs -->
+        @if (formMachineCuts.length > 0) {
+          <div class="bg-black/20 p-4 rounded-xl border border-borderColor">
+            <h4 class="text-sm font-bold text-textSecondary mb-3 flex items-center gap-2">
+              <i-lucide name="gamepad-2" class="w-4 h-4"></i-lucide> Desglose por Máquina
+            </h4>
+            <div class="space-y-3">
+              @for (mc of formMachineCuts; track mc.machineId) {
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 text-sm text-textPrimary truncate" title="{{ mc.name }}">{{ mc.name }}</div>
+                  <div class="w-1/2 relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary text-sm">$</span>
+                    <input type="number" step="0.01" min="0" [(ngModel)]="mc.amount" (ngModelChange)="onMachineAmountChange()" name="machineAmount_{{ mc.machineId }}" class="w-full bg-bgMain border border-borderColor rounded-lg pl-7 pr-3 py-2 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm" placeholder="0.00">
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="text-xs text-warning bg-warning/10 p-3 rounded-lg border border-warning/30 flex items-start gap-2">
+            <i-lucide name="alert-circle" class="w-4 h-4 shrink-0"></i-lucide>
+            Esta ubicación no tiene máquinas registradas. Ve al Inventario para asignar máquinas a esta ubicación.
+          </div>
+        }
+
+        <div class="grid grid-cols-2 gap-4 mt-2">
           <div>
-            <label class="block text-sm font-semibold text-textSecondary mb-2">Subtotal ($) *</label>
-            <input type="number" step="0.01" [(ngModel)]="formCut.grossIncome" (ngModelChange)="calculateProfits()" name="grossIncome" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="0.00">
+            <label class="block text-sm font-semibold text-textSecondary mb-2">Subtotal Calculado</label>
+            <div class="w-full bg-bgMain/50 border border-borderColor/50 rounded-lg px-4 py-3 text-textPrimary font-bold flex items-center gap-1 opacity-70">
+              <span class="text-textSecondary">$</span>{{ formCut.grossIncome || 0 | number:'1.2-2' }}
+            </div>
           </div>
           <div>
             <label class="block text-sm font-semibold text-textSecondary mb-2">Gastos / Viáticos ($)</label>
@@ -124,7 +392,7 @@
           <div class="flex items-center gap-4 mt-2">
             <div class="flex-1">
               <label class="block text-xs font-semibold text-textSecondary mb-1">Tu Porcentaje (%)</label>
-              <input type="number" [(ngModel)]="formCut.ownerPercentage" (ngModelChange)="calculateProfits()" name="ownerPercentage" min="0" max="100" class="w-full bg-bgSecondary border border-borderColor rounded px-3 py-2 text-textPrimary focus:outline-none">
+              <input type="number" step="0.01" [(ngModel)]="formCut.ownerPercentage" (ngModelChange)="calculateProfits()" name="ownerPercentage" min="0" max="100" class="w-full bg-bgSecondary border border-borderColor rounded px-3 py-2 text-textPrimary focus:outline-none">
             </div>
             <div class="flex-1 text-right">
               <div class="text-xs text-textSecondary">Tu Ganancia</div>
@@ -137,9 +405,18 @@
           </div>
         </div>
 
+        @if (isEditMode) {
+          <div class="mt-2">
+            <label class="block text-sm font-semibold text-warning mb-2 flex items-center gap-2">
+              <i-lucide name="alert-triangle" class="w-4 h-4"></i-lucide> Razón de la Modificación <span class="text-danger">*</span>
+            </label>
+            <textarea [(ngModel)]="editReason" name="editReason" rows="2" required class="w-full bg-warning/10 border border-warning/50 rounded-lg px-4 py-3 text-warning placeholder-warning/50 focus:outline-none focus:border-warning transition-colors" placeholder="¿Por qué se está editando este corte? (Obligatorio)"></textarea>
+          </div>
+        }
+
         <div class="mt-4 flex justify-end gap-3 pt-4 border-t border-borderColor">
           <button type="button" class="btn bg-white/5 hover:bg-white/10 text-textPrimary" (click)="closeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar Corte</button>
+          <button type="submit" class="btn btn-primary" [disabled]="formMachineCuts.length === 0 && !formCut.grossIncome">Guardar Corte</button>
         </div>
       </form>
     </div>

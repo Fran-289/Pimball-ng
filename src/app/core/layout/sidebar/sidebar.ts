@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
@@ -13,4 +13,9 @@ import { CommonModule } from '@angular/common';
 export class Sidebar {
   @Input() isCollapsed = false;
   @Input() isOpenMobile = false;
+  @Output() linkClicked = new EventEmitter<void>();
+
+  onLinkClick() {
+    this.linkClicked.emit();
+  }
 }

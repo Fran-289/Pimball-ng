@@ -25,6 +25,7 @@ export class Tickets implements OnInit {
   };
 
   selectedTicket: any = null;
+  tempStatus = '';
   newNote = '';
 
   constructor(private dataService: DataService, private cdr: ChangeDetectorRef) {}
@@ -35,7 +36,7 @@ export class Tickets implements OnInit {
 
   loadData() {
     this.tickets = this.dataService.getTickets();
-    this.machines = this.dataService.getMachines();
+    this.machines = this.dataService.getMachines().sort((a, b) => a.id.localeCompare(b.id));
     this.cdr.detectChanges();
   }
 
@@ -75,8 +76,19 @@ export class Tickets implements OnInit {
 
   viewTicket(ticket: any) {
     this.selectedTicket = ticket;
+    this.tempStatus = ticket.status === 'open' ? 'progress' : ticket.status;
     this.isViewModalOpen = true;
     this.newNote = '';
+  }
+
+  saveStatus() {
+    if (this.selectedTicket) {
+      if (this.selectedTicket.status !== this.tempStatus) {
+        this.dataService.updateTicketStatus(this.selectedTicket.id, this.tempStatus);
+        this.loadData();
+      }
+      this.closeViewModal();
+    }
   }
 
   closeViewModal() {
@@ -99,5 +111,10 @@ export class Tickets implements OnInit {
       this.loadData();
       this.selectedTicket = this.tickets.find(t => t.id === this.selectedTicket.id);
     }
+  }
+
+  capitalizeFirst(value: string): string {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 }

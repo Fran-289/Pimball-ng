@@ -43,7 +43,10 @@ export class Inventory implements OnInit {
   }
 
   loadData() {
-    this.machines = this.dataService.getMachines();
+    this.machines = this.dataService.getMachines().sort((a, b) => {
+      // Ordenar alfanuméricamente asegurando que M-01 va antes que M-02, etc.
+      return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+    });
     this.locations = this.dataService.getLocations();
     this.cdr.detectChanges(); // Force view update to fix navigation rendering issues
   }
@@ -110,6 +113,12 @@ export class Inventory implements OnInit {
   }
 
   deleteMachine(id: string) {
+    const machine = this.machines.find(m => m.id === id);
+    if (machine && machine.status !== 'inactive') {
+      // Regla de negocio: No se puede eliminar si no está inactiva.
+      // Se pide explícitamente no mostrar notificación para que no cualquiera sepa el truco.
+      return;
+    }
     if (confirm('¿Estás seguro de eliminar esta máquina? Esto no se puede deshacer.')) {
       this.dataService.deleteMachine(id);
       this.loadData();
@@ -137,5 +146,10 @@ export class Inventory implements OnInit {
   closeImageView() {
     this.isImageViewModalOpen = false;
     this.selectedImageUrl = '';
+  }
+
+  capitalizeFirst(value: string): string {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 }
