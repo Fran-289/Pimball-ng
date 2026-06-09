@@ -15,7 +15,17 @@ export class Sidebar {
   @Input() isOpenMobile = false;
   @Output() linkClicked = new EventEmitter<void>();
 
+  showCreditsModal = false;
+
   onLinkClick() {
     this.linkClicked.emit();
+  }
+
+  openCredits() {
+    this.showCreditsModal = true;
+  }
+
+  closeCredits() {
+    this.showCreditsModal = false;
   }
 }

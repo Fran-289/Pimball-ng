@@ -1,0 +1,142 @@
+<div class="p-6">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">Registros Globales</h2>
+      <p class="text-textSecondary mt-2">Visión general del rendimiento financiero de toda la red.</p>
+    </div>
+  </div>
+
+  <!-- Global Summaries -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 mb-8">
+    <!-- Mensual General -->
+    <div class="glass-panel p-4 sm:p-6 border-l-4 border-l-accentPrimary relative overflow-hidden group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.3)] hover:border-accentPrimary transition-all duration-300 cursor-pointer" (click)="isMonthlyModalOpen = true">
+      <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/5 to-transparent group-hover:from-accentPrimary/10 transition-colors"></div>
+      <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
+        <h3 class="text-textSecondary font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center gap-2">
+          <i-lucide name="calendar" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">Mes Actual (Todas las Ubicaciones)</span>
+        </h3>
+        <div class="hidden sm:flex w-8 h-8 rounded-full bg-accentPrimary/20 items-center justify-center text-accentPrimary shrink-0">
+          <i-lucide name="bar-chart-2" class="w-4 h-4"></i-lucide>
+        </div>
+      </div>
+      <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div>
+          <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal Bruto</div>
+          <div class="text-xl sm:text-2xl font-bold text-textPrimary truncate">{{ globalMonthGross | currency }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia Total</div>
+          <div class="text-2xl sm:text-4xl font-bold text-success drop-shadow-sm truncate">+{{ globalMonthProfit | currency }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historico General -->
+    <div class="glass-panel p-4 sm:p-6 border-l-4 border-l-purple-500 relative overflow-hidden group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(168,85,247,0.3)] hover:border-purple-500 transition-all duration-300 cursor-pointer" (click)="isYearlyModalOpen = true">
+      <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent group-hover:from-purple-500/10 transition-colors"></div>
+      <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
+        <h3 class="text-textSecondary font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center gap-2">
+          <i-lucide name="activity" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">Histórico General (Desde el inicio)</span>
+        </h3>
+        <div class="hidden sm:flex w-8 h-8 rounded-full bg-purple-500/20 items-center justify-center text-purple-400 shrink-0">
+          <i-lucide name="database-backup" class="w-4 h-4"></i-lucide>
+        </div>
+      </div>
+      <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div>
+          <div class="text-[10px] text-textSecondary uppercase font-semibold">Total Subtotal</div>
+          <div class="text-xl sm:text-2xl font-bold text-textPrimary truncate">{{ globalTotalGross | currency }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia Neta Total</div>
+          <div class="text-2xl sm:text-4xl font-bold text-success drop-shadow-sm truncate">+{{ globalTotalProfit | currency }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  @if (isMonthlyModalOpen) {
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-4xl shadow-2xl scale-100 transition-transform max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
+        <div class="flex justify-between items-center p-6 border-b border-borderColor bg-bgSecondary z-10 shrink-0 rounded-t-2xl">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-accentPrimary/10 flex items-center justify-center text-accentPrimary">
+              <i-lucide name="calendar-clock" class="w-5 h-5"></i-lucide>
+            </div>
+            <div>
+              <h3 class="text-xl font-heading font-bold text-textPrimary">Historial Mensual Global</h3>
+              <p class="text-sm text-textSecondary">Compara el rendimiento mes a mes.</p>
+            </div>
+          </div>
+          <button class="btn-icon" (click)="isMonthlyModalOpen = false"><i-lucide name="x"></i-lucide></button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (gm of globalMonths; track gm.monthKey) {
+              <div class="glass-panel p-5 border border-borderColor/50 hover:border-accentPrimary hover:shadow-[0_4px_20px_-5px_rgba(99,102,241,0.2)] transition-all duration-300 cursor-default relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-accentPrimary/0 to-accentPrimary/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+                <div class="relative z-10 text-sm font-bold text-textSecondary uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <i-lucide name="calendar" class="w-4 h-4"></i-lucide> {{ gm.monthName }}
+                </div>
+                <div class="relative z-10 grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
+                  <div>
+                    <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                    <div class="font-bold text-textPrimary">{{ gm.totalGross | currency }}</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                    <div class="font-bold text-success text-lg drop-shadow-sm">{{ gm.totalOwnerProfit | currency }}</div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isYearlyModalOpen) {
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-4xl shadow-2xl scale-100 transition-transform max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
+        <div class="flex justify-between items-center p-6 border-b border-borderColor bg-bgSecondary z-10 shrink-0 rounded-t-2xl">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">
+              <i-lucide name="calendar-days" class="w-5 h-5"></i-lucide>
+            </div>
+            <div>
+              <h3 class="text-xl font-heading font-bold text-textPrimary">Historial Anual Global</h3>
+              <p class="text-sm text-textSecondary">Compara el rendimiento año a año.</p>
+            </div>
+          </div>
+          <button class="btn-icon" (click)="isYearlyModalOpen = false"><i-lucide name="x"></i-lucide></button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (gy of globalYears; track gy.year) {
+              <div class="glass-panel p-5 border border-borderColor/50 hover:border-success hover:shadow-[0_4px_20px_-5px_rgba(16,185,129,0.2)] transition-all duration-300 cursor-default relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-success/0 to-success/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
+                <div class="relative z-10 text-sm font-bold text-textSecondary uppercase tracking-wider flex items-center gap-2 mb-3">
+                  <i-lucide name="calendar" class="w-4 h-4"></i-lucide> Año {{ gy.year }}
+                </div>
+                <div class="relative z-10 grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
+                  <div>
+                    <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                    <div class="font-bold text-textPrimary">{{ gy.totalGross | currency }}</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                    <div class="font-bold text-success text-lg drop-shadow-sm">{{ gy.totalOwnerProfit | currency }}</div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

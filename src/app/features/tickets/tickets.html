@@ -1,7 +1,7 @@
 <div class="p-6">
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-      <h2 class="text-3xl font-heading font-bold text-textPrimary">Reparaciones y Mantenimiento</h2>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">Gestión de Mantenimiento y Soporte</h2>
       <p class="text-textSecondary mt-2">Tablero Kanban para el seguimiento de tickets.</p>
     </div>
     <button class="btn btn-primary" (click)="openModal()">
@@ -185,15 +185,15 @@
           </div>
         </div>
 
-        <div class="flex justify-between items-center pt-4 border-t border-borderColor">
-          <div class="flex items-center gap-3">
-            <label class="text-sm font-semibold text-textSecondary">Cambiar Estado:</label>
-            <select [(ngModel)]="tempStatus" class="bg-bgMain border border-borderColor rounded-lg px-3 py-2 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm">
+        <div class="flex justify-between items-center pt-4 border-t border-borderColor gap-2">
+          <div class="flex items-center gap-2 sm:gap-3">
+            <label class="text-sm font-semibold text-textSecondary">Estado:</label>
+            <select [(ngModel)]="tempStatus" class="bg-bgMain border border-borderColor rounded-lg px-3 h-10 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm">
               <option value="progress">En Progreso</option>
               <option value="closed">Cerrado</option>
             </select>
           </div>
-          <button class="btn btn-primary" (click)="saveStatus()">Guardar Estado</button>
+          <button class="bg-accentPrimary hover:bg-accentHover text-white px-4 sm:px-6 h-10 rounded-lg text-sm font-semibold transition-colors shrink-0" (click)="saveStatus()">Guardar</button>
         </div>
       </div>
     </div>

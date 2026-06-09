@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
 const STORE_KEYS = {
   MACHINES: 'pm_machines',
@@ -13,6 +13,8 @@ const STORE_KEYS = {
   providedIn: 'root'
 })
 export class DataService {
+
+  dataChanged = new EventEmitter<void>();
 
   constructor() {
     this.initStore();
@@ -117,7 +119,7 @@ export class DataService {
     this.addAuditLog('Crear', 'Máquinas', `Se registró la máquina ${id} - ${machine.name}`);
   }
 
-  updateMachine(id: string, updates: any): void {
+  updateMachine(id: string, updates: any, reason?: string): void {
     let changes: any[] = [];
     const machines = this.getMachines().map(m => {
       if (m.id === id) {
@@ -130,13 +132,17 @@ export class DataService {
       return m;
     });
     this.setStore(STORE_KEYS.MACHINES, machines);
-    this.addAuditLog('Editar', 'Máquinas', `Se editó la máquina ${id}`, changes.length > 0 ? changes : undefined);
+    if (changes.length > 0) {
+      const autoReason = changes.map(ch => `Cambio de ${ch.field} a ${ch.new}`).join(', ');
+      const finalReason = reason || autoReason;
+      this.addAuditLog('Editar', 'Máquinas', `Se editó la máquina ${id}. ${finalReason}`, changes);
+    }
   }
 
-  deleteMachine(id: string): void {
+  deleteMachine(id: string, reason?: string): void {
     const machines = this.getMachines().filter(m => m.id !== id);
     this.setStore(STORE_KEYS.MACHINES, machines);
-    this.addAuditLog('Eliminar', 'Máquinas', `Se eliminó la máquina ${id}`);
+    this.addAuditLog('Eliminar', 'Máquinas', `Se eliminó la máquina ${id}${reason ? '. Razón: ' + reason : ''}`);
   }
 
   // --- LOCATIONS ---
@@ -173,49 +179,69 @@ export class DataService {
     cuts.push({ ...cut, id: this.generateId(), displayId: displayId, date: cut.date || new Date().toISOString() });
     this.setStore(STORE_KEYS.CUTS, cuts);
     this.addAuditLog('Crear', 'Cortes', `Se generó el corte ${displayId} por ${cut.grossIncome}`);
+    this.dataChanged.emit();
   }
 
   updateCut(id: string, updates: any, editReason?: string): void {
     let changes: any[] = [];
+    let savedReason = '';
     const cuts = this.getCuts().map(c => {
       if (c.id === id) {
         let history = c.editHistory || [];
-        if (editReason) {
+        
+        if (c.grossIncome !== updates.grossIncome) {
+          changes.push({ field: 'Subtotal', old: c.grossIncome, new: updates.grossIncome });
+        }
+        if (c.expenses !== updates.expenses) {
+          changes.push({ field: 'Gastos', old: c.expenses || 0, new: updates.expenses || 0 });
+        }
+        if (c.ownerPercentage !== updates.ownerPercentage) {
+          changes.push({ field: '% Ganancia', old: c.ownerPercentage, new: updates.ownerPercentage });
+        }
+        
+        if (changes.length > 0) {
+          const autoReason = changes.map(ch => `Cambio de ${ch.field} a ${ch.new}`).join(', ');
+          savedReason = editReason || autoReason;
+          
           history.push({
             date: new Date().toISOString(),
-            reason: editReason,
+            reason: savedReason,
             previousGross: c.grossIncome,
             previousNet: c.netIncome
           });
-          
-          if (c.grossIncome !== updates.grossIncome) {
-            changes.push({ field: 'Subtotal', old: c.grossIncome, new: updates.grossIncome });
-          }
-          if (c.expenses !== updates.expenses) {
-            changes.push({ field: 'Gastos', old: c.expenses || 0, new: updates.expenses || 0 });
-          }
-          if (c.ownerPercentage !== updates.ownerPercentage) {
-            changes.push({ field: '% Ganancia', old: c.ownerPercentage, new: updates.ownerPercentage });
-          }
         }
+        
         return { ...c, ...updates, editHistory: history };
       }
       return c;
     });
     this.setStore(STORE_KEYS.CUTS, cuts);
-    this.addAuditLog('Editar', 'Cortes', `Se editó el corte. Razón: ${editReason || 'Ajuste interno'}`, changes.length > 0 ? changes : undefined);
+    if (changes.length > 0) {
+      this.addAuditLog('Editar', 'Cortes', `Se editó el corte. ${savedReason}`, changes);
+    }
+    this.dataChanged.emit();
   }
 
-  deleteCut(id: string): void {
-    const cuts = this.getCuts().filter(c => c.id !== id);
+  cancelCut(id: string, reason: string): void {
+    const cuts = this.getCuts().map(c => {
+      if (c.id === id) {
+        return { 
+          ...c, 
+          isCancelled: true, 
+          cancelReason: reason 
+        };
+      }
+      return c;
+    });
     this.setStore(STORE_KEYS.CUTS, cuts);
-    this.addAuditLog('Eliminar', 'Cortes', `Se eliminó un corte del historial`);
+    this.addAuditLog('Anular', 'Cortes', `Se anuló un corte del historial. Razón: ${reason}`);
+    this.dataChanged.emit();
   }
 
-  deleteLocation(id: string): void {
+  deleteLocation(id: string, reason?: string): void {
     const locations = this.getLocations().filter(l => l.id !== id);
     this.setStore(STORE_KEYS.LOCATIONS, locations);
-    this.addAuditLog('Eliminar', 'Ubicaciones', `Se eliminó una ubicación`);
+    this.addAuditLog('Eliminar', 'Ubicaciones', `Se eliminó una ubicación${reason ? '. Razón: ' + reason : ''}`);
   }
 
   // --- TICKETS ---
@@ -261,7 +287,9 @@ export class DataService {
       machines: this.getMachines(),
       locations: this.getLocations(),
       cuts: this.getCuts(),
-      tickets: this.getTickets()
+      tickets: this.getTickets(),
+      audit: this.getAuditLogs(),
+      user: this.getStore(STORE_KEYS.USER)
     };
   }
 
@@ -270,7 +298,9 @@ export class DataService {
       'machines': STORE_KEYS.MACHINES,
       'locations': STORE_KEYS.LOCATIONS,
       'cuts': STORE_KEYS.CUTS,
-      'tickets': STORE_KEYS.TICKETS
+      'tickets': STORE_KEYS.TICKETS,
+      'audit': STORE_KEYS.AUDIT,
+      'user': STORE_KEYS.USER
     };
     const key = keys[moduleName];
     if (key && Array.isArray(dataArray)) {

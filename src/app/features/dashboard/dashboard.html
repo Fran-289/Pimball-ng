@@ -1,40 +1,41 @@
 <div class="p-6">
   <div class="mb-8">
-    <h2 class="text-3xl font-heading font-bold text-textPrimary">Visión General</h2>
-    <p class="text-textSecondary mt-2">Métricas y actividad reciente de tus máquinas pinball.</p>
+    <h2 class="text-3xl font-heading font-bold text-textPrimary">Rendimiento Operativo Global</h2>
+    <p class="text-textSecondary mt-2">Sistema de Gestión Inteligente para máquinas Pinball FDNO by Frank</p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.5)] hover:border-accentPrimary transition-all duration-300 relative overflow-hidden">
+  <div class="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 mb-8">
+    
+    <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.5)] hover:border-accentPrimary transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/inventory">
       <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/0 via-accentPrimary/5 to-accentPrimary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-      <div>
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-xs mb-1 group-hover:text-accentPrimary transition-colors">Total Máquinas</div>
-        <div class="text-3xl font-bold text-textPrimary">{{ statMachines }}</div>
+      <div class="order-2 xl:order-1">
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-accentPrimary transition-colors truncate">Máquinas</div>
+        <div class="text-lg sm:text-2xl md:text-3xl font-bold text-textPrimary">{{ statMachines }}</div>
       </div>
-      <div class="w-12 h-12 rounded-full bg-accentPrimary/20 flex items-center justify-center text-accentPrimary group-hover:scale-110 group-hover:bg-accentPrimary group-hover:text-white transition-all">
-        <i-lucide name="gamepad-2"></i-lucide>
+      <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-accentPrimary/20 flex items-center justify-center text-accentPrimary group-hover:scale-110 group-hover:bg-accentPrimary group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
+        <i-lucide name="gamepad-2" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"></i-lucide>
       </div>
     </div>
 
-    <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.5)] hover:border-success transition-all duration-300 relative overflow-hidden" routerLink="/cuts">
+    <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.5)] hover:border-success transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/cuts">
       <div class="absolute inset-0 bg-gradient-to-r from-success/0 via-success/5 to-success/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-      <div>
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-xs mb-1 group-hover:text-success transition-colors">Ubicaciones Activas</div>
-        <div class="text-3xl font-bold text-success">{{ statLocations }}</div>
+      <div class="order-2 xl:order-1">
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-success transition-colors truncate">Ubicaciones</div>
+        <div class="text-lg sm:text-2xl md:text-3xl font-bold text-success">{{ statLocations }}</div>
       </div>
-      <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success group-hover:scale-110 group-hover:bg-success group-hover:text-white transition-all">
-        <i-lucide name="map-pin"></i-lucide>
+      <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-success/20 flex items-center justify-center text-success group-hover:scale-110 group-hover:bg-success group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
+        <i-lucide name="map-pin" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"></i-lucide>
       </div>
     </div>
 
-    <div class="glass-panel flex items-center justify-between cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(239,68,68,0.5)] hover:border-danger transition-all duration-300 relative overflow-hidden">
+    <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(239,68,68,0.5)] hover:border-danger transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/tickets">
       <div class="absolute inset-0 bg-gradient-to-r from-danger/0 via-danger/5 to-danger/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-      <div>
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-xs mb-1 group-hover:text-danger transition-colors">Tickets Abiertos</div>
-        <div class="text-3xl font-bold text-danger">{{ statTickets }}</div>
+      <div class="order-2 xl:order-1">
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-danger transition-colors truncate">Tickets</div>
+        <div class="text-lg sm:text-2xl md:text-3xl font-bold text-danger">{{ statTickets }}</div>
       </div>
-      <div class="w-12 h-12 rounded-full bg-danger/20 flex items-center justify-center text-danger group-hover:scale-110 group-hover:bg-danger group-hover:text-white transition-all">
-        <i-lucide name="triangle-alert"></i-lucide>
+      <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-danger/20 flex items-center justify-center text-danger group-hover:scale-110 group-hover:bg-danger group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
+        <i-lucide name="triangle-alert" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"></i-lucide>
       </div>
     </div>
   </div>
@@ -161,15 +162,21 @@
               <div class="absolute inset-x-0 bottom-0 h-full w-full max-w-[35px] mx-auto bg-black/20 border border-white/5 rounded-t-lg z-0 transition-colors group-hover/bar:bg-black/30"></div>
               
               <!-- Tooltip (visible on hover) -->
-              <div class="absolute bottom-full mb-2 bg-success text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_4px_15px_rgba(16,185,129,0.5)] opacity-0 group-hover/bar:opacity-100 group-hover/bar:-translate-y-2 transition-all duration-300 whitespace-nowrap z-50 pointer-events-none">
+              <div class="absolute bottom-full mb-2 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/bar:opacity-100 group-hover/bar:-translate-y-2 transition-all duration-300 whitespace-nowrap z-50 pointer-events-none"
+                   [ngClass]="item.value > 0 ? 'bg-success shadow-[0_4px_15px_rgba(16,185,129,0.5)]' : 'bg-danger shadow-[0_4px_15px_rgba(239,68,68,0.5)]'">
                 {{ item.value | currency }}
-                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-success rotate-45"></div>
+                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45"
+                     [ngClass]="item.value > 0 ? 'bg-success' : 'bg-danger'"></div>
               </div>
               
               <!-- Bar -->
-              <div class="w-full max-w-[35px] bg-gradient-to-t from-success/30 via-success/70 to-success rounded-t-lg transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover/bar:from-success/50 group-hover/bar:via-success/80 group-hover/bar:to-success group-hover/bar:shadow-[0_0_25px_rgba(16,185,129,0.6)] z-10 relative overflow-hidden" [style.height.%]="item.heightPercentage || 5">
-                <div class="absolute top-0 inset-x-0 h-2 bg-white/30 rounded-t-lg"></div>
-              </div>
+              @if (item.value > 0) {
+                <div class="w-full max-w-[35px] bg-gradient-to-t from-success/30 via-success/70 to-success rounded-t-lg transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover/bar:from-success/50 group-hover/bar:via-success/80 group-hover/bar:to-success group-hover/bar:shadow-[0_0_25px_rgba(16,185,129,0.6)] z-10 relative overflow-hidden" [style.height.%]="item.heightPercentage">
+                  <div class="absolute top-0 inset-x-0 h-2 bg-white/30 rounded-t-lg"></div>
+                </div>
+              } @else {
+                <div class="w-full max-w-[35px] bg-danger/20 border-t border-danger/50 rounded-t transition-all duration-1000 ease-out z-10 relative shadow-[0_0_10px_rgba(239,68,68,0.2)]" [style.height.%]="2"></div>
+              }
 
             </div>
             <div class="text-[10px] font-bold text-textSecondary mt-2 z-10 group-hover/bar:text-success transition-colors">{{ item.label }}</div>

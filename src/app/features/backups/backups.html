@@ -1,6 +1,6 @@
 <div class="p-6">
   <div class="mb-8">
-    <h2 class="text-3xl font-heading font-bold text-textPrimary">Respaldos y Exportación</h2>
+    <h2 class="text-3xl font-heading font-bold text-textPrimary">Centro de Respaldos y Exportación Segura</h2>
     <p class="text-textSecondary mt-2">Protege tu información creando copias de seguridad o exportando tus datos.</p>
   </div>
 
@@ -12,7 +12,7 @@
         <i-lucide name="database-backup" class="text-accentPrimary"></i-lucide>
         Base de Datos (JSON)
       </h3>
-      <p class="text-textSecondary text-sm mb-6">Genera un archivo JSON con toda la información de tu sistema (Máquinas, Cortes, Tickets y Ubicaciones). Úsalo para restaurar tu sistema en otro dispositivo o en caso de emergencia.</p>
+      <p class="text-textSecondary text-sm mb-6">Genera un archivo JSON con toda la información de tu sistema (Máquinas, Cortes, Tickets, Ubicaciones y Auditoría). Úsalo para restaurar tu sistema en otro dispositivo o en caso de emergencia.</p>
       
       <div class="flex flex-col sm:flex-row gap-4">
         <button class="btn btn-primary flex-1 justify-center" (click)="exportBackup()">
@@ -24,7 +24,14 @@
         <input type="file" id="import-file" class="hidden" accept=".json" (change)="onFileSelected($event)">
       </div>
 
-      <div class="mt-6 p-4 bg-warning/10 border border-warning/30 rounded-xl">
+      <div class="mt-6 p-4 bg-accentPrimary/10 border border-accentPrimary/30 rounded-xl mb-3">
+        <p class="text-xs text-textPrimary flex items-start gap-2 leading-relaxed">
+          <i-lucide name="info" class="w-4 h-4 text-accentPrimary shrink-0 mt-[1px]"></i-lucide>
+          <span><strong>Recomendación de Seguridad:</strong> Te sugerimos descargar un respaldo general del sistema al menos <span class="text-accentPrimary font-bold">cada 15 días</span> para mantener resguardada toda tu información.</span>
+        </p>
+      </div>
+
+      <div class="p-4 bg-warning/10 border border-warning/30 rounded-xl">
         <p class="text-xs text-warning flex items-start gap-2">
           <i-lucide name="alert-triangle" class="w-4 h-4 shrink-0 mt-[2px]"></i-lucide>
           Al restaurar un respaldo, se sobreescribirán todos los datos actuales con los del archivo. ¡Asegúrate de que es el archivo correcto!
@@ -53,6 +60,11 @@
         
         <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportTicketsCsv()">
           <span class="flex items-center gap-2"><i-lucide name="wrench" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Historial de Reparaciones</span>
+          <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
+        </button>
+
+        <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportAuditCsv()">
+          <span class="flex items-center gap-2"><i-lucide name="clipboard-list" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Registros de Auditoría</span>
           <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
         </button>
       </div>

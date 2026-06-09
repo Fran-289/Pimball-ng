@@ -20,6 +20,7 @@ export class Cuts implements OnInit {
   machines: any[] = [];
   isModalOpen = false;
   isEditMode = false;
+  isLocationLocked = false;
   editingCutId = '';
   editReason = '';
   
@@ -77,6 +78,22 @@ export class Cuts implements OnInit {
     const globMonthsMap = new Map<string, any>();
     const globYearsMap = new Map<string, any>();
 
+    // Inicializar solo las ubicaciones que tienen al menos una máquina asignada
+    const activeLocationsIds = new Set(this.machines.map(m => m.locationId));
+    
+    for (const loc of this.locations) {
+      if (activeLocationsIds.has(loc.id)) {
+        locMap.set(loc.id, {
+          locationId: loc.id,
+          locationName: loc.name,
+          totalProfit: 0,
+          monthsMap: new Map<string, any>(),
+          lastCut: null,
+          nextCutDate: null
+        });
+      }
+    }
+
     for (const cut of this.cuts) {
       const locId = cut.locationId;
       if (!locMap.has(locId)) {
@@ -85,8 +102,8 @@ export class Cuts implements OnInit {
           locationName: this.getLocationName(locId),
           totalProfit: 0,
           monthsMap: new Map<string, any>(),
-          lastCut: null, // We'll store the most recent cut info here
-          nextCutDate: null // We'll look for the most relevant next cut date
+          lastCut: null,
+          nextCutDate: null
         });
       }
       
@@ -108,49 +125,52 @@ export class Cuts implements OnInit {
 
       const monthData = locData.monthsMap.get(monthKey);
       monthData.cuts.push(cut);
-      monthData.totalGross += Number(cut.grossIncome) || 0;
-      monthData.totalExpenses += Number(cut.expenses) || 0;
-      monthData.totalOwnerProfit += Number(cut.ownerProfit) || 0;
       
-      locData.totalProfit += Number(cut.ownerProfit) || 0;
+      if (!cut.isCancelled) {
+        monthData.totalGross += Number(cut.grossIncome) || 0;
+        monthData.totalExpenses += Number(cut.expenses) || 0;
+        monthData.totalOwnerProfit += Number(cut.ownerProfit) || 0;
+        
+        locData.totalProfit += Number(cut.ownerProfit) || 0;
 
-      // Global aggregations
-      this.globalTotalGross += Number(cut.grossIncome) || 0;
-      this.globalTotalProfit += Number(cut.ownerProfit) || 0;
-      if (monthKey === currentMonthKey) {
-        this.globalMonthGross += Number(cut.grossIncome) || 0;
-        this.globalMonthProfit += Number(cut.ownerProfit) || 0;
-      }
-      
-      if (!globMonthsMap.has(monthKey)) {
-        globMonthsMap.set(monthKey, {
-          monthKey,
-          monthName: `${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`,
-          totalGross: 0,
-          totalOwnerProfit: 0
-        });
-      }
-      const gMonth = globMonthsMap.get(monthKey);
-      gMonth.totalGross += Number(cut.grossIncome) || 0;
-      gMonth.totalOwnerProfit += Number(cut.ownerProfit) || 0;
-      
-      const yearKey = `${dateObj.getFullYear()}`;
-      if (!globYearsMap.has(yearKey)) {
-        globYearsMap.set(yearKey, {
-          year: yearKey,
-          totalGross: 0,
-          totalOwnerProfit: 0
-        });
-      }
-      const gYear = globYearsMap.get(yearKey);
-      gYear.totalGross += Number(cut.grossIncome) || 0;
-      gYear.totalOwnerProfit += Number(cut.ownerProfit) || 0;
-      
-      // Keep track of the most recent cut for the location card
-      if (!locData.lastCut || new Date(cut.date).getTime() > new Date(locData.lastCut.date).getTime()) {
-        locData.lastCut = cut;
-        if (cut.nextCutDate) {
-          locData.nextCutDate = cut.nextCutDate;
+        // Global aggregations
+        this.globalTotalGross += Number(cut.grossIncome) || 0;
+        this.globalTotalProfit += Number(cut.ownerProfit) || 0;
+        if (monthKey === currentMonthKey) {
+          this.globalMonthGross += Number(cut.grossIncome) || 0;
+          this.globalMonthProfit += Number(cut.ownerProfit) || 0;
+        }
+        
+        if (!globMonthsMap.has(monthKey)) {
+          globMonthsMap.set(monthKey, {
+            monthKey,
+            monthName: `${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`,
+            totalGross: 0,
+            totalOwnerProfit: 0
+          });
+        }
+        const gMonth = globMonthsMap.get(monthKey);
+        gMonth.totalGross += Number(cut.grossIncome) || 0;
+        gMonth.totalOwnerProfit += Number(cut.ownerProfit) || 0;
+        
+        const yearKey = `${dateObj.getFullYear()}`;
+        if (!globYearsMap.has(yearKey)) {
+          globYearsMap.set(yearKey, {
+            year: yearKey,
+            totalGross: 0,
+            totalOwnerProfit: 0
+          });
+        }
+        const gYear = globYearsMap.get(yearKey);
+        gYear.totalGross += Number(cut.grossIncome) || 0;
+        gYear.totalOwnerProfit += Number(cut.ownerProfit) || 0;
+        
+        // Keep track of the most recent cut for the location card (only active cuts)
+        if (!locData.lastCut || new Date(cut.date).getTime() > new Date(locData.lastCut.date).getTime()) {
+          locData.lastCut = cut;
+          if (cut.nextCutDate) {
+            locData.nextCutDate = cut.nextCutDate;
+          }
         }
       }
     }
@@ -206,6 +226,7 @@ export class Cuts implements OnInit {
 
   openLocationSpecificModal(locationId: string) {
     this.isEditMode = false;
+    this.isLocationLocked = locationId ? true : false;
     this.editingCutId = '';
     this.editReason = '';
 
@@ -255,17 +276,18 @@ export class Cuts implements OnInit {
   }
 
   canDeleteCut(cut: any): boolean {
-    return Number(cut.grossIncome) <= 0;
+    return !cut.isCancelled;
   }
 
   deleteCut(cut: any) {
-    if (!this.canDeleteCut(cut)) {
-      alert('No puedes eliminar un corte que tenga ingresos. Debes editarlo a cero primero.');
-      return;
-    }
-    if (confirm('¿Estás seguro de eliminar este corte? Esta acción no se puede deshacer.')) {
-      this.dataService.deleteCut(cut.id);
+    if (!this.canDeleteCut(cut)) return;
+    
+    const reason = prompt('Razón para anular este corte:');
+    if (reason && reason.trim() !== '') {
+      this.dataService.cancelCut(cut.id, reason.trim());
       this.loadData();
+    } else if (reason !== null) {
+      alert('Debes ingresar una razón para anular el corte.');
     }
   }
 
@@ -276,9 +298,12 @@ export class Cuts implements OnInit {
       return;
     }
     if (confirm('¿Estás seguro de eliminar esta ubicación por completo?')) {
-      this.dataService.deleteLocation(locationId);
-      this.backToCards();
-      this.loadData();
+      const reason = prompt('Razón de la eliminación:');
+      if (reason !== null) {
+        this.dataService.deleteLocation(locationId, reason || 'No especificada');
+        this.backToCards();
+        this.loadData();
+      }
     }
   }
 
@@ -337,10 +362,6 @@ export class Cuts implements OnInit {
     })).filter(mc => mc.amount > 0); // Only save non-zero entries to save space if needed
     
     if (this.isEditMode) {
-      if (!this.editReason || this.editReason.trim() === '') {
-        alert('Debes ingresar una razón o comentario para la edición.');
-        return;
-      }
       this.dataService.updateCut(this.editingCutId, {
         ...this.formCut,
         grossIncome: Number(this.formCut.grossIncome) || 0,

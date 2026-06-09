@@ -120,8 +120,11 @@ export class Inventory implements OnInit {
       return;
     }
     if (confirm('¿Estás seguro de eliminar esta máquina? Esto no se puede deshacer.')) {
-      this.dataService.deleteMachine(id);
-      this.loadData();
+      const reason = prompt('Razón de la eliminación:');
+      if (reason !== null) {
+        this.dataService.deleteMachine(id, reason || 'No especificada');
+        this.loadData();
+      }
     }
   }
 

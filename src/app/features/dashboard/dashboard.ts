@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule],
+  imports: [LucideAngularModule, CommonModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -74,11 +75,16 @@ export class Dashboard implements OnInit {
     const sortedMonths = Array.from(monthMap.entries()).sort((a, b) => a[0].localeCompare(b[0])).slice(-6);
     
     if (sortedMonths.length > 0) {
+       const currentYear = new Date().getFullYear();
        const maxVal = Math.max(...sortedMonths.map(m => m[1]));
        this.chartData = sortedMonths.map(m => {
-          const [year, month] = m[0].split('-');
-          const dateObj = new Date(parseInt(year), parseInt(month) - 1, 1);
-          const label = dateObj.toLocaleString('es-ES', { month: 'short' }).substring(0, 3).toUpperCase();
+          const [yearStr, month] = m[0].split('-');
+          const yearNum = parseInt(yearStr);
+          const dateObj = new Date(yearNum, parseInt(month) - 1, 1);
+          let label = dateObj.toLocaleString('es-ES', { month: 'short' }).substring(0, 3).toUpperCase();
+          if (yearNum !== currentYear) {
+            label += ` '${yearStr.substring(2)}`;
+          }
           return {
              label,
              value: m[1],

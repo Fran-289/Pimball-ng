@@ -5,12 +5,14 @@ import { Cuts } from './features/cuts/cuts';
 import { Tickets } from './features/tickets/tickets';
 import { Backups } from './features/backups/backups';
 import { Audit } from './features/audit/audit';
+import { Records } from './features/records/records';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: Dashboard },
   { path: 'inventory', component: Inventory },
   { path: 'cuts', component: Cuts },
+  { path: 'records', component: Records },
   { path: 'tickets', component: Tickets },
   { path: 'backups', component: Backups },
   { path: 'audit', component: Audit },

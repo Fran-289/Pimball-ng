@@ -34,6 +34,8 @@ export class Backups {
         if (data.locations) { this.dataService.restoreData('locations', data.locations); successCount++; }
         if (data.cuts) { this.dataService.restoreData('cuts', data.cuts); successCount++; }
         if (data.tickets) { this.dataService.restoreData('tickets', data.tickets); successCount++; }
+        if (data.audit) { this.dataService.restoreData('audit', data.audit); successCount++; }
+        if (data.user) { this.dataService.restoreData('user', data.user); successCount++; }
 
         if (successCount > 0) {
           alert('¡Respaldo restaurado exitosamente! La página se recargará para aplicar los cambios.');
@@ -73,5 +75,19 @@ export class Backups {
     const headers = ['ID_Ticket', 'Fecha_Creacion', 'MaquinaID', 'Titulo', 'Estado', 'Prioridad', 'Notas'];
     const mapRow = (t: any) => [t.id, t.createdAt, t.machineId, t.title, t.status, t.priority, t.notes ? t.notes.length + ' notas' : '0'];
     this.exportService.downloadCSV(tickets, 'Reporte_Reparaciones', headers, mapRow);
+  }
+
+  exportAuditCsv() {
+    const logs = this.dataService.getAuditLogs();
+    const headers = ['ID', 'Fecha', 'Accion', 'Modulo', 'Detalles', 'Cambios_Especificos'];
+    const mapRow = (l: any) => [
+      l.id, 
+      l.date, 
+      l.action, 
+      l.module, 
+      l.details, 
+      l.changes ? l.changes.map((c: any) => `${c.field}: ${c.old} -> ${c.new}`).join(' | ') : 'N/A'
+    ];
+    this.exportService.downloadCSV(logs, 'Reporte_Auditoria', headers, mapRow);
   }
 }
