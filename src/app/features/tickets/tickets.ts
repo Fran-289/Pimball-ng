@@ -36,7 +36,7 @@ export class Tickets implements OnInit {
 
   loadData() {
     this.tickets = this.dataService.getTickets();
-    this.machines = this.dataService.getMachines().sort((a, b) => a.id.localeCompare(b.id));
+    this.machines = this.dataService.getMachines().sort((a, b) => (a?.id || '').localeCompare(b?.id || ''));
     this.cdr.detectChanges();
   }
 

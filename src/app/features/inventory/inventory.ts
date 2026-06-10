@@ -45,7 +45,9 @@ export class Inventory implements OnInit {
   loadData() {
     this.machines = this.dataService.getMachines().sort((a, b) => {
       // Ordenar alfanuméricamente asegurando que M-01 va antes que M-02, etc.
-      return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+      const idA = a?.id || '';
+      const idB = b?.id || '';
+      return idA.localeCompare(idB);
     });
     this.locations = this.dataService.getLocations();
     this.cdr.detectChanges(); // Force view update to fix navigation rendering issues
