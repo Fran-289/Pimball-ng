@@ -37,7 +37,7 @@ export class Dashboard implements OnInit {
     machines.forEach(m => this.machinesMap[m.id] = m.id + ' - ' + m.name);
 
     this.statMachines = machines.filter(m => m.status === 'active').length;
-    this.statLocations = locations.length;
+    this.statLocations = new Set(machines.map(m => m.locationId)).size;
     this.statTickets = tickets.filter(t => t.status === 'open').length;
 
     const cutsActivity = cuts.map(c => ({ ...c, type: 'cut', sortDate: new Date(c.date || 0) }));

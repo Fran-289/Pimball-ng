@@ -114,6 +114,15 @@
         
         <div class="text-center mb-2">
           <p class="text-textSecondary text-xs uppercase tracking-widest font-bold mb-2">Desarrollado y Diseñado por:</p>
+          
+          <div class="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto my-5 group cursor-pointer" (click)="openDeveloperImage()">
+            <div class="absolute inset-0 bg-gradient-to-tr from-accentPrimary to-purple-500 rounded-full blur-md opacity-60 group-hover:opacity-100 group-hover:blur-lg transition-all duration-300"></div>
+            <img src="developer.jpg" class="w-full h-full object-cover rounded-full border-[4px] border-bgSecondary relative z-10 shadow-2xl group-hover:scale-105 transition-transform duration-300" alt="Francisco Antonio Ayala Sibrián">
+            <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 group-hover:scale-105">
+              <i-lucide name="zoom-in" class="text-white w-8 h-8 drop-shadow-md"></i-lucide>
+            </div>
+          </div>
+
           <h2 class="text-3xl md:text-4xl font-heading font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-accentPrimary via-purple-400 to-accentPrimary drop-shadow-lg">Francisco Antonio Ayala Sibrián</h2>
         </div>
 
@@ -186,5 +195,15 @@
         </button>
       </div>
     </div>
+  </div>
+}
+
+<!-- Modal Imagen Desarrollador -->
+@if (isDeveloperImageModalOpen) {
+  <div class="fixed inset-0 bg-black/95 backdrop-blur-md z-[130] flex items-center justify-center p-4 cursor-pointer" (click)="closeDeveloperImage()">
+    <button class="absolute top-6 right-6 text-white hover:text-danger transition-colors bg-black/50 rounded-full p-2 hover:bg-white/10" (click)="closeDeveloperImage()">
+      <i-lucide name="x" class="w-8 h-8"></i-lucide>
+    </button>
+    <img src="developer.jpg" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-[0_0_50px_rgba(99,102,241,0.3)] cursor-default border-2 border-white/10" (click)="$event.stopPropagation()" alt="Francisco Antonio Ayala Sibrián">
   </div>
 }

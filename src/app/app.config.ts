@@ -7,7 +7,7 @@ import {
   CheckCircle, AlertCircle, PlusCircle, Plus, Lock, BarChart2, X, TriangleAlert, Save, RefreshCw,
   Download, AlertTriangle, FileSpreadsheet, User, Activity, Upload, ArrowLeft, ArrowRight,
   CalendarClock, TrendingDown, TrendingUp, ClipboardList, CalendarDays, CalendarCheck, Moon, Sun, Camera, Info,
-  Bell, AlertOctagon, BellOff, Award, Code
+  Bell, AlertOctagon, BellOff, Award, Code, ZoomIn
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
       CheckCircle, AlertCircle, PlusCircle, Plus, Lock, BarChart2, X, TriangleAlert, Save, RefreshCw,
       Download, AlertTriangle, FileSpreadsheet, User, Activity, Upload, ArrowLeft, ArrowRight,
       CalendarClock, TrendingDown, TrendingUp, ClipboardList, CalendarDays, CalendarCheck, Moon, Sun, Camera, Info,
-      Bell, AlertOctagon, BellOff, Award, Code
+      Bell, AlertOctagon, BellOff, Award, Code, ZoomIn
     }))
   ]
 };

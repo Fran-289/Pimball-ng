@@ -16,6 +16,15 @@ export class Sidebar {
   @Output() linkClicked = new EventEmitter<void>();
 
   showCreditsModal = false;
+  isDeveloperImageModalOpen = false;
+
+  openDeveloperImage() {
+    this.isDeveloperImageModalOpen = true;
+  }
+
+  closeDeveloperImage() {
+    this.isDeveloperImageModalOpen = false;
+  }
 
   onLinkClick() {
     this.linkClicked.emit();
