@@ -29,13 +29,11 @@ export class Backups {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.name.endsWith('.json')) {
       alert('⚠️ Solo se aceptan archivos con extensión .json');
       return;
     }
 
-    // Validate file size (max 10MB to prevent abuse)
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_FILE_SIZE) {
       alert('⚠️ El archivo es demasiado grande. Máximo permitido: 10MB.');
@@ -46,8 +44,6 @@ export class Backups {
     reader.onload = (e: any) => {
       try {
         const rawData = JSON.parse(e.target.result);
-
-        // ── SECURITY: Validate backup structure before restoring ──
         const validation = this.securityService.validateBackupData(rawData);
 
         if (validation.errors.length > 0) {
@@ -60,7 +56,6 @@ export class Backups {
           return;
         }
 
-        // ── DOUBLE CONFIRMATION ──
         const confirmed = confirm(
           '⚠️ ADVERTENCIA DE SEGURIDAD\n\n' +
           'Al restaurar un respaldo se sobreescribirán los datos actuales.\n' +
@@ -70,7 +65,6 @@ export class Backups {
 
         if (!confirmed) return;
 
-        // ── RESTORE with sanitized data ──
         let successCount = 0;
         const sanitized = validation.sanitized;
 
@@ -80,13 +74,11 @@ export class Backups {
         if (sanitized['tickets']) { this.dataService.restoreData('tickets', sanitized['tickets'] as any[]); successCount++; }
         if (sanitized['user']) { this.dataService.restoreData('user', sanitized['user'] as any[]); successCount++; }
 
-        // ── AUDIT LOGS: Merge instead of overwrite ──
         if (sanitized['audit']) {
           this.dataService.mergeAuditLogs(sanitized['audit'] as any[]);
           successCount++;
         }
 
-        // ── Log the restore action in audit ──
         this.dataService.addAuditLog(
           'Restaurar',
           'Sistema',
@@ -106,7 +98,6 @@ export class Backups {
     };
     reader.readAsText(file);
 
-    // Reset the file input so the same file can be selected again
     event.target.value = '';
   }
 
@@ -114,39 +105,37 @@ export class Backups {
     document.getElementById('import-file')?.click();
   }
 
-  // EXPORT TO EXCEL / CSV
-  exportMachinesCsv() {
+  // EXPORT FUNCTIONS
+
+  exportMachines(format: 'excel' | 'pdf') {
     const machines = this.dataService.getMachines();
     const headers = ['ID', 'Nombre', 'Tipo', 'UbicacionID', 'Estado', 'Notas'];
-    const mapRow = (m: any) => [m.id, m.name, m.type, m.locationId, m.status, m.notes];
-    this.exportService.downloadCSV(machines, 'Inventario_Maquinas', headers, mapRow);
+    const mapRow = (m: any) => [m.id, m.name, m.type, m.locationId, m.status, m.notes || ''];
+    if (format === 'excel') this.exportService.downloadExcel(machines, 'Inventario_Maquinas', 'INVENTARIO DE MÁQUINAS', headers, mapRow);
+    else this.exportService.downloadPDF(machines, 'Inventario_Maquinas', 'INVENTARIO DE MÁQUINAS', headers, mapRow);
   }
 
-  exportCutsCsv() {
+  exportCuts(format: 'excel' | 'pdf') {
     const cuts = this.dataService.getCuts();
     const headers = ['ID_Corte', 'Fecha', 'UbicacionID', 'Ingreso Bruto', 'Gastos', 'Ingreso Neto', 'Ganancia Propietario', 'Ganancia Local'];
     const mapRow = (c: any) => [c.displayId, c.date, c.locationId, c.grossIncome, c.expenses, c.netIncome, c.ownerProfit, c.locationProfit];
-    this.exportService.downloadCSV(cuts, 'Reporte_Cortes', headers, mapRow);
+    if (format === 'excel') this.exportService.downloadExcel(cuts, 'Reporte_Cortes', 'REPORTE DE CORTES', headers, mapRow);
+    else this.exportService.downloadPDF(cuts, 'Reporte_Cortes', 'REPORTE DE CORTES', headers, mapRow);
   }
 
-  exportTicketsCsv() {
+  exportTickets(format: 'excel' | 'pdf') {
     const tickets = this.dataService.getTickets();
     const headers = ['ID_Ticket', 'Fecha_Creacion', 'MaquinaID', 'Titulo', 'Estado', 'Prioridad', 'Notas'];
     const mapRow = (t: any) => [t.id, t.createdAt, t.machineId, t.title, t.status, t.priority, t.notes ? t.notes.length + ' notas' : '0'];
-    this.exportService.downloadCSV(tickets, 'Reporte_Reparaciones', headers, mapRow);
+    if (format === 'excel') this.exportService.downloadExcel(tickets, 'Reporte_Reparaciones', 'REPORTE DE REPARACIONES', headers, mapRow);
+    else this.exportService.downloadPDF(tickets, 'Reporte_Reparaciones', 'REPORTE DE REPARACIONES', headers, mapRow);
   }
 
-  exportAuditCsv() {
+  exportAudit(format: 'excel' | 'pdf') {
     const logs = this.dataService.getAuditLogs();
-    const headers = ['ID', 'Fecha', 'Accion', 'Modulo', 'Detalles', 'Cambios_Especificos'];
-    const mapRow = (l: any) => [
-      l.id, 
-      l.date, 
-      l.action, 
-      l.module, 
-      l.details, 
-      l.changes ? l.changes.map((c: any) => `${c.field}: ${c.old} -> ${c.new}`).join(' | ') : 'N/A'
-    ];
-    this.exportService.downloadCSV(logs, 'Reporte_Auditoria', headers, mapRow);
+    const headers = ['ID', 'Fecha', 'Accion', 'Modulo', 'Detalles'];
+    const mapRow = (l: any) => [l.id, l.date, l.action, l.module, l.details];
+    if (format === 'excel') this.exportService.downloadExcel(logs, 'Reporte_Auditoria', 'REGISTROS DE AUDITORÍA', headers, mapRow);
+    else this.exportService.downloadPDF(logs, 'Reporte_Auditoria', 'REGISTROS DE AUDITORÍA', headers, mapRow);
   }
 }

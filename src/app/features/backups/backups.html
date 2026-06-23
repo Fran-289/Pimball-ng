@@ -4,10 +4,10 @@
     <p class="text-textSecondary mt-2">Protege tu información creando copias de seguridad o exportando tus datos.</p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     
     <!-- Backup Section -->
-    <div class="glass-panel p-8">
+    <div class="glass-panel p-6 sm:p-8">
       <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2 mb-4">
         <i-lucide name="database-backup" class="text-accentPrimary"></i-lucide>
         Base de Datos (JSON)
@@ -15,10 +15,10 @@
       <p class="text-textSecondary text-sm mb-6">Genera un archivo JSON con toda la información de tu sistema (Máquinas, Cortes, Tickets, Ubicaciones y Auditoría). Úsalo para restaurar tu sistema en otro dispositivo o en caso de emergencia.</p>
       
       <div class="flex flex-col sm:flex-row gap-4">
-        <button class="btn btn-primary flex-1 justify-center" (click)="exportBackup()">
+        <button class="btn btn-primary flex-1 justify-center whitespace-nowrap" (click)="exportBackup()">
           <i-lucide name="download" class="w-5 h-5"></i-lucide> Descargar Respaldo Completo
         </button>
-        <button class="btn bg-white/10 hover:bg-white/20 text-textPrimary flex-1 justify-center" (click)="triggerFileInput()">
+        <button class="btn bg-white/10 hover:bg-white/20 text-textPrimary flex-1 justify-center whitespace-nowrap" (click)="triggerFileInput()">
           <i-lucide name="upload" class="w-5 h-5"></i-lucide> Restaurar Sistema
         </button>
         <input type="file" id="import-file" class="hidden" accept=".json" (change)="onFileSelected($event)">
@@ -39,34 +39,74 @@
       </div>
     </div>
 
-    <!-- Export to CSV Section -->
-    <div class="glass-panel p-8">
+    <!-- Export to Excel/PDF Section -->
+    <div class="glass-panel p-6 sm:p-8 flex flex-col">
       <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2 mb-4">
         <i-lucide name="file-spreadsheet" class="text-success"></i-lucide>
-        Exportar a Excel / CSV
+        Exportar Reportes (Excel / PDF)
       </h3>
-      <p class="text-textSecondary text-sm mb-6">Descarga tus datos en formato tabular para analizarlos en Excel, Google Sheets u otras herramientas de cálculo.</p>
+      <p class="text-textSecondary text-sm mb-6">Descarga tus datos en formato tabular para analizarlos o presentar reportes estructurados con formato profesional.</p>
       
-      <div class="flex flex-col gap-3">
-        <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportMachinesCsv()">
-          <span class="flex items-center gap-2"><i-lucide name="package" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Inventario de Máquinas</span>
-          <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
-        </button>
+      <div class="flex flex-col gap-3 flex-1">
+        <!-- Machines -->
+        <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
+          <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
+            <i-lucide name="package" class="w-5 h-5 text-accentSecondary"></i-lucide> Inventario de Máquinas
+          </span>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportMachines('excel')" title="Exportar a Excel">
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+            </button>
+            <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportMachines('pdf')" title="Exportar a PDF">
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+            </button>
+          </div>
+        </div>
         
-        <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportCutsCsv()">
-          <span class="flex items-center gap-2"><i-lucide name="dollar-sign" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Reporte de Cortes</span>
-          <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
-        </button>
+        <!-- Cuts -->
+        <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
+          <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
+            <i-lucide name="dollar-sign" class="w-5 h-5 text-accentSecondary"></i-lucide> Reporte de Cortes
+          </span>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportCuts('excel')" title="Exportar a Excel">
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+            </button>
+            <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportCuts('pdf')" title="Exportar a PDF">
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+            </button>
+          </div>
+        </div>
         
-        <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportTicketsCsv()">
-          <span class="flex items-center gap-2"><i-lucide name="wrench" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Historial de Reparaciones</span>
-          <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
-        </button>
+        <!-- Tickets -->
+        <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
+          <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
+            <i-lucide name="wrench" class="w-5 h-5 text-accentSecondary"></i-lucide> Historial de Reparaciones
+          </span>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportTickets('excel')" title="Exportar a Excel">
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+            </button>
+            <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportTickets('pdf')" title="Exportar a PDF">
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+            </button>
+          </div>
+        </div>
 
-        <button class="btn bg-white/5 border border-white/10 hover:border-success/50 hover:bg-success/10 text-textPrimary justify-between w-full group transition-all" (click)="exportAuditCsv()">
-          <span class="flex items-center gap-2"><i-lucide name="clipboard-list" class="w-4 h-4 text-textSecondary group-hover:text-success"></i-lucide> Registros de Auditoría</span>
-          <i-lucide name="download" class="w-4 h-4 text-success"></i-lucide>
-        </button>
+        <!-- Audit Logs -->
+        <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
+          <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
+            <i-lucide name="clipboard-list" class="w-5 h-5 text-accentSecondary"></i-lucide> Registros de Auditoría
+          </span>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportAudit('excel')" title="Exportar a Excel">
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+            </button>
+            <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportAudit('pdf')" title="Exportar a PDF">
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
