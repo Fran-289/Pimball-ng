@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { ExportService } from '../../core/services/export.service';
+import { SecurityService } from '../../core/services/security.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 
@@ -12,7 +13,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './backups.css',
 })
 export class Backups {
-  constructor(private dataService: DataService, private exportService: ExportService) {}
+  constructor(
+    private dataService: DataService,
+    private exportService: ExportService,
+    private securityService: SecurityService
+  ) {}
 
   exportBackup() {
     const backup = this.dataService.getFullBackup();
@@ -24,31 +29,85 @@ export class Backups {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+      alert('⚠️ Solo se aceptan archivos con extensión .json');
+      return;
+    }
+
+    // Validate file size (max 10MB to prevent abuse)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      alert('⚠️ El archivo es demasiado grande. Máximo permitido: 10MB.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e: any) => {
       try {
-        const data = JSON.parse(e.target.result);
+        const rawData = JSON.parse(e.target.result);
+
+        // ── SECURITY: Validate backup structure before restoring ──
+        const validation = this.securityService.validateBackupData(rawData);
+
+        if (validation.errors.length > 0) {
+          const errorMsg = validation.errors.slice(0, 5).join('\n');
+          alert(`⚠️ El archivo contiene datos inválidos:\n\n${errorMsg}\n\n${validation.errors.length > 5 ? `...y ${validation.errors.length - 5} errores más.` : ''}\nSe restaurarán solo los datos válidos.`);
+        }
+
+        if (!validation.sanitized) {
+          alert('❌ El archivo no contiene un formato válido para PinballPro. La restauración fue cancelada.');
+          return;
+        }
+
+        // ── DOUBLE CONFIRMATION ──
+        const confirmed = confirm(
+          '⚠️ ADVERTENCIA DE SEGURIDAD\n\n' +
+          'Al restaurar un respaldo se sobreescribirán los datos actuales.\n' +
+          'Los registros de auditoría se FUSIONARÁN (no se borran).\n\n' +
+          '¿Deseas continuar con la restauración?'
+        );
+
+        if (!confirmed) return;
+
+        // ── RESTORE with sanitized data ──
         let successCount = 0;
-        
-        if (data.machines) { this.dataService.restoreData('machines', data.machines); successCount++; }
-        if (data.locations) { this.dataService.restoreData('locations', data.locations); successCount++; }
-        if (data.cuts) { this.dataService.restoreData('cuts', data.cuts); successCount++; }
-        if (data.tickets) { this.dataService.restoreData('tickets', data.tickets); successCount++; }
-        if (data.audit) { this.dataService.restoreData('audit', data.audit); successCount++; }
-        if (data.user) { this.dataService.restoreData('user', data.user); successCount++; }
+        const sanitized = validation.sanitized;
+
+        if (sanitized['machines']) { this.dataService.restoreData('machines', sanitized['machines'] as any[]); successCount++; }
+        if (sanitized['locations']) { this.dataService.restoreData('locations', sanitized['locations'] as any[]); successCount++; }
+        if (sanitized['cuts']) { this.dataService.restoreData('cuts', sanitized['cuts'] as any[]); successCount++; }
+        if (sanitized['tickets']) { this.dataService.restoreData('tickets', sanitized['tickets'] as any[]); successCount++; }
+        if (sanitized['user']) { this.dataService.restoreData('user', sanitized['user'] as any[]); successCount++; }
+
+        // ── AUDIT LOGS: Merge instead of overwrite ──
+        if (sanitized['audit']) {
+          this.dataService.mergeAuditLogs(sanitized['audit'] as any[]);
+          successCount++;
+        }
+
+        // ── Log the restore action in audit ──
+        this.dataService.addAuditLog(
+          'Restaurar',
+          'Sistema',
+          `Se restauró un respaldo del sistema (${successCount} módulos). Archivo: ${this.securityService.sanitizeString(file.name, 100)}`
+        );
 
         if (successCount > 0) {
-          alert('¡Respaldo restaurado exitosamente! La página se recargará para aplicar los cambios.');
+          alert(`✅ ¡Respaldo restaurado exitosamente!\n${successCount} módulo(s) restaurados.\nLa página se recargará para aplicar los cambios.`);
           window.location.reload();
         } else {
-          alert('El archivo no contiene un formato válido para PinballPro.');
+          alert('❌ No se pudieron restaurar datos del archivo.');
         }
       } catch (err) {
-        alert('Error al leer el archivo JSON.');
-        console.error(err);
+        alert('❌ Error al leer el archivo JSON. Verifica que sea un archivo de respaldo válido.');
+        console.error('[Backups] Error de restauración:', err);
       }
     };
     reader.readAsText(file);
+
+    // Reset the file input so the same file can be selected again
+    event.target.value = '';
   }
 
   triggerFileInput() {

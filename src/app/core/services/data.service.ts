@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
+import { SecurityService } from './security.service';
 
 const STORE_KEYS = {
   MACHINES: 'pm_machines',
@@ -16,20 +17,51 @@ export class DataService {
 
   dataChanged = new EventEmitter<void>();
 
-  constructor() {
+  /** Tracks if any data integrity violation has been detected */
+  private integrityViolationDetected = false;
+
+  constructor(private security: SecurityService) {
     this.initStore();
   }
+
+  // ─── INTEGRITY STATUS ─────────────────────────────────────────────
+
+  hasIntegrityViolation(): boolean {
+    return this.integrityViolationDetected;
+  }
+
+  /**
+   * Verify integrity of all stored data.
+   * If any module fails checksum, flag it.
+   */
+  async verifyAllIntegrity(): Promise<{ module: string; valid: boolean }[]> {
+    const results: { module: string; valid: boolean }[] = [];
+    for (const [name, key] of Object.entries(STORE_KEYS)) {
+      const { isValid } = await this.security.getWithChecksum(key);
+      results.push({ module: name, valid: isValid });
+      if (!isValid) {
+        this.integrityViolationDetected = true;
+        console.warn(`[DataService] ⚠️ Integridad comprometida en: ${name}`);
+      }
+    }
+    return results;
+  }
+
+  // ─── CORE STORAGE (with checksums) ────────────────────────────────
 
   private getStore(key: string): any[] {
     return JSON.parse(localStorage.getItem(key) || '[]');
   }
 
   private setStore(key: string, data: any[]): void {
-    localStorage.setItem(key, JSON.stringify(data));
+    const json = JSON.stringify(data);
+    localStorage.setItem(key, json);
+    // Fire-and-forget checksum update
+    this.security.setWithChecksum(key, json).catch(() => {});
   }
 
   private generateId(): string {
-    return '_' + Math.random().toString(36).substr(2, 9);
+    return this.security.generateSecureId();
   }
 
   private initStore() {
@@ -64,9 +96,9 @@ export class DataService {
     logs.unshift({
       id: this.generateId(),
       date: new Date().toISOString(),
-      action,
-      module,
-      details,
+      action: this.security.sanitizeString(action, 50),
+      module: this.security.sanitizeString(module, 50),
+      details: this.security.sanitizeString(details, 500),
       changes
     });
     this.setStore(STORE_KEYS.AUDIT, logs);
@@ -91,7 +123,12 @@ export class DataService {
   }
 
   saveUserProfile(profile: any): void {
-    this.setStore(STORE_KEYS.USER, [profile]);
+    const sanitizedProfile = {
+      name: this.security.sanitizeString(profile.name, 100),
+      email: this.security.sanitizeString(profile.email, 200),
+      photo: this.security.sanitizeDataUrl(profile.photo)
+    };
+    this.setStore(STORE_KEYS.USER, [sanitizedProfile]);
   }
 
   // --- MACHINES ---
@@ -114,20 +151,38 @@ export class DataService {
       }
     }
     const id = 'M-' + String(nextNum).padStart(2, '0');
-    machines.push({ ...machine, id: id, createdAt: new Date().toISOString() });
+    const sanitized = {
+      ...machine,
+      id: id,
+      name: this.security.sanitizeString(machine.name, 100),
+      type: this.security.sanitizeString(machine.type, 50),
+      notes: this.security.sanitizeString(machine.notes, 500),
+      photo: this.security.sanitizeDataUrl(machine.photo),
+      estimatedCost: this.security.sanitizeNumber(machine.estimatedCost, 0, 999999),
+      createdAt: new Date().toISOString()
+    };
+    machines.push(sanitized);
     this.setStore(STORE_KEYS.MACHINES, machines);
-    this.addAuditLog('Crear', 'Máquinas', `Se registró la máquina ${id} - ${machine.name}`);
+    this.addAuditLog('Crear', 'Máquinas', `Se registró la máquina ${id} - ${sanitized.name}`);
   }
 
   updateMachine(id: string, updates: any, reason?: string): void {
     let changes: any[] = [];
+    const sanitizedUpdates = {
+      ...updates,
+      name: this.security.sanitizeString(updates.name, 100),
+      type: this.security.sanitizeString(updates.type, 50),
+      notes: this.security.sanitizeString(updates.notes, 500),
+      photo: this.security.sanitizeDataUrl(updates.photo),
+      estimatedCost: this.security.sanitizeNumber(updates.estimatedCost, 0, 999999)
+    };
     const machines = this.getMachines().map(m => {
       if (m.id === id) {
-        if (m.name !== updates.name) changes.push({ field: 'Nombre', old: m.name, new: updates.name });
-        if (m.status !== updates.status) changes.push({ field: 'Estado', old: this.translateStatus(m.status), new: this.translateStatus(updates.status) });
-        if (m.locationId !== updates.locationId) changes.push({ field: 'Ubicación', old: m.locationId, new: updates.locationId });
-        if (m.estimatedCost !== updates.estimatedCost) changes.push({ field: 'Costo', old: m.estimatedCost || 0, new: updates.estimatedCost || 0 });
-        return { ...m, ...updates };
+        if (m.name !== sanitizedUpdates.name) changes.push({ field: 'Nombre', old: m.name, new: sanitizedUpdates.name });
+        if (m.status !== sanitizedUpdates.status) changes.push({ field: 'Estado', old: this.translateStatus(m.status), new: this.translateStatus(sanitizedUpdates.status) });
+        if (m.locationId !== sanitizedUpdates.locationId) changes.push({ field: 'Ubicación', old: m.locationId, new: sanitizedUpdates.locationId });
+        if (m.estimatedCost !== sanitizedUpdates.estimatedCost) changes.push({ field: 'Costo', old: m.estimatedCost || 0, new: sanitizedUpdates.estimatedCost || 0 });
+        return { ...m, ...sanitizedUpdates };
       }
       return m;
     });
@@ -142,7 +197,7 @@ export class DataService {
   deleteMachine(id: string, reason?: string): void {
     const machines = this.getMachines().filter(m => m.id !== id);
     this.setStore(STORE_KEYS.MACHINES, machines);
-    this.addAuditLog('Eliminar', 'Máquinas', `Se eliminó la máquina ${id}${reason ? '. Razón: ' + reason : ''}`);
+    this.addAuditLog('Eliminar', 'Máquinas', `Se eliminó la máquina ${id}${reason ? '. Razón: ' + this.security.sanitizeString(reason, 200) : ''}`);
   }
 
   // --- LOCATIONS ---
@@ -152,10 +207,11 @@ export class DataService {
 
   addLocation(name: string): string {
     const locations = this.getLocations();
-    const id = 'loc_' + Math.random().toString(36).substr(2, 9);
-    locations.push({ id, name });
+    const id = 'loc_' + this.generateId().substring(0, 9);
+    const sanitizedName = this.security.sanitizeString(name, 100);
+    locations.push({ id, name: sanitizedName });
     this.setStore(STORE_KEYS.LOCATIONS, locations);
-    this.addAuditLog('Crear', 'Ubicaciones', `Se registró la ubicación ${name}`);
+    this.addAuditLog('Crear', 'Ubicaciones', `Se registró la ubicación ${sanitizedName}`);
     return id;
   }
 
@@ -176,9 +232,21 @@ export class DataService {
       nextNum = Math.max(...nums) + 1;
     }
     const displayId = 'C-' + String(nextNum).padStart(3, '0');
-    cuts.push({ ...cut, id: this.generateId(), displayId: displayId, date: cut.date || new Date().toISOString() });
+    const sanitizedCut = {
+      ...cut,
+      id: this.generateId(),
+      displayId: displayId,
+      grossIncome: this.security.sanitizeNumber(cut.grossIncome, 0, 999999999),
+      expenses: this.security.sanitizeNumber(cut.expenses, 0, 999999999),
+      netIncome: this.security.sanitizeNumber(cut.netIncome, 0, 999999999),
+      ownerPercentage: this.security.sanitizeNumber(cut.ownerPercentage, 0, 100),
+      ownerProfit: this.security.sanitizeNumber(cut.ownerProfit, 0, 999999999),
+      locationProfit: this.security.sanitizeNumber(cut.locationProfit, 0, 999999999),
+      date: cut.date || new Date().toISOString()
+    };
+    cuts.push(sanitizedCut);
     this.setStore(STORE_KEYS.CUTS, cuts);
-    this.addAuditLog('Crear', 'Cortes', `Se generó el corte ${displayId} por ${cut.grossIncome}`);
+    this.addAuditLog('Crear', 'Cortes', `Se generó el corte ${displayId} por ${sanitizedCut.grossIncome}`);
     this.dataChanged.emit();
   }
 
@@ -188,15 +256,19 @@ export class DataService {
     const cuts = this.getCuts().map(c => {
       if (c.id === id) {
         let history = c.editHistory || [];
+
+        const sanitizedGross = this.security.sanitizeNumber(updates.grossIncome, 0, 999999999);
+        const sanitizedExpenses = this.security.sanitizeNumber(updates.expenses, 0, 999999999);
+        const sanitizedPercentage = this.security.sanitizeNumber(updates.ownerPercentage, 0, 100);
         
-        if (c.grossIncome !== updates.grossIncome) {
-          changes.push({ field: 'Subtotal', old: c.grossIncome, new: updates.grossIncome });
+        if (c.grossIncome !== sanitizedGross) {
+          changes.push({ field: 'Subtotal', old: c.grossIncome, new: sanitizedGross });
         }
-        if (c.expenses !== updates.expenses) {
-          changes.push({ field: 'Gastos', old: c.expenses || 0, new: updates.expenses || 0 });
+        if (c.expenses !== sanitizedExpenses) {
+          changes.push({ field: 'Gastos', old: c.expenses || 0, new: sanitizedExpenses });
         }
-        if (c.ownerPercentage !== updates.ownerPercentage) {
-          changes.push({ field: '% Ganancia', old: c.ownerPercentage, new: updates.ownerPercentage });
+        if (c.ownerPercentage !== sanitizedPercentage) {
+          changes.push({ field: '% Ganancia', old: c.ownerPercentage, new: sanitizedPercentage });
         }
         
         if (changes.length > 0) {
@@ -205,13 +277,20 @@ export class DataService {
           
           history.push({
             date: new Date().toISOString(),
-            reason: savedReason,
+            reason: this.security.sanitizeString(savedReason, 500),
             previousGross: c.grossIncome,
             previousNet: c.netIncome
           });
         }
         
-        return { ...c, ...updates, editHistory: history };
+        return {
+          ...c,
+          ...updates,
+          grossIncome: sanitizedGross,
+          expenses: sanitizedExpenses,
+          ownerPercentage: sanitizedPercentage,
+          editHistory: history
+        };
       }
       return c;
     });
@@ -223,25 +302,26 @@ export class DataService {
   }
 
   cancelCut(id: string, reason: string): void {
+    const sanitizedReason = this.security.sanitizeString(reason, 500);
     const cuts = this.getCuts().map(c => {
       if (c.id === id) {
         return { 
           ...c, 
           isCancelled: true, 
-          cancelReason: reason 
+          cancelReason: sanitizedReason 
         };
       }
       return c;
     });
     this.setStore(STORE_KEYS.CUTS, cuts);
-    this.addAuditLog('Anular', 'Cortes', `Se anuló un corte del historial. Razón: ${reason}`);
+    this.addAuditLog('Anular', 'Cortes', `Se anuló un corte del historial. Razón: ${sanitizedReason}`);
     this.dataChanged.emit();
   }
 
   deleteLocation(id: string, reason?: string): void {
     const locations = this.getLocations().filter(l => l.id !== id);
     this.setStore(STORE_KEYS.LOCATIONS, locations);
-    this.addAuditLog('Eliminar', 'Ubicaciones', `Se eliminó una ubicación${reason ? '. Razón: ' + reason : ''}`);
+    this.addAuditLog('Eliminar', 'Ubicaciones', `Se eliminó una ubicación${reason ? '. Razón: ' + this.security.sanitizeString(reason, 200) : ''}`);
   }
 
   // --- TICKETS ---
@@ -252,12 +332,28 @@ export class DataService {
   addTicket(ticket: any): void {
     const tickets = this.getTickets();
     const id = this.generateId();
-    tickets.push({ ...ticket, id: id, status: 'open', createdAt: new Date().toISOString(), notes: [] });
+    const sanitizedTicket = {
+      ...ticket,
+      id: id,
+      title: this.security.sanitizeString(ticket.title, 200),
+      description: this.security.sanitizeString(ticket.description, 1000),
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      notes: []
+    };
+    tickets.push(sanitizedTicket);
     this.setStore(STORE_KEYS.TICKETS, tickets);
     this.addAuditLog('Crear', 'Tickets', `Se abrió el ticket de reparación para la máquina ${ticket.machineId}`);
   }
 
   updateTicketStatus(id: string, status: string): void {
+    // Validate status against allowed values
+    const allowedStatuses = ['open', 'in_progress', 'closed'];
+    if (!allowedStatuses.includes(status)) {
+      console.warn('[DataService] Estado de ticket inválido:', status);
+      return;
+    }
+
     let oldStatus = '';
     const tickets = this.getTickets().map(t => {
       if (t.id === id) {
@@ -271,9 +367,10 @@ export class DataService {
   }
 
   addTicketNote(id: string, note: string): void {
+    const sanitizedNote = this.security.sanitizeString(note, 500);
     const tickets = this.getTickets().map(t => {
       if (t.id === id) {
-        return { ...t, notes: [...(t.notes || []), { text: note, date: new Date().toISOString() }] };
+        return { ...t, notes: [...(t.notes || []), { text: sanitizedNote, date: new Date().toISOString() }] };
       }
       return t;
     });
@@ -289,7 +386,12 @@ export class DataService {
       cuts: this.getCuts(),
       tickets: this.getTickets(),
       audit: this.getAuditLogs(),
-      user: this.getStore(STORE_KEYS.USER)
+      user: this.getStore(STORE_KEYS.USER),
+      _meta: {
+        version: '1.0.0',
+        exportDate: new Date().toISOString(),
+        app: 'PinballNG'
+      }
     };
   }
 
@@ -308,5 +410,21 @@ export class DataService {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Merges audit logs from a backup with existing ones.
+   * Existing logs are preserved; backup logs are appended only if not already present.
+   */
+  mergeAuditLogs(backupAuditLogs: any[]): void {
+    const existingLogs = this.getAuditLogs();
+    const existingIds = new Set(existingLogs.map(l => l.id));
+
+    const newLogs = backupAuditLogs.filter(l => !existingIds.has(l.id));
+    if (newLogs.length > 0) {
+      const merged = [...existingLogs, ...newLogs]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      this.setStore(STORE_KEYS.AUDIT, merged);
+    }
   }
 }

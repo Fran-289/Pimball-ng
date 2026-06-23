@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { DataService } from '../../services/data.service';
+import { SecurityService } from '../../services/security.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
@@ -27,7 +28,7 @@ export class Header implements OnInit {
   notifications: any[] = [];
   showNotifications = false;
 
-  constructor(private dataService: DataService, private router: Router) {
+  constructor(private dataService: DataService, private security: SecurityService, private router: Router) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.updatePageTitle(event.urlAfterRedirects);
@@ -161,13 +162,31 @@ export class Header implements OnInit {
 
   onPhotoChange(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.editProfile.photo = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // VUL-6: Validate file is actually an image
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Solo se permiten archivos de imagen (JPEG, PNG, GIF, WebP).');
+      return;
     }
+
+    // Limit file size to 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen es demasiado grande. Máximo: 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const dataUrl = this.security.sanitizeDataUrl(e.target.result);
+      if (dataUrl) {
+        this.editProfile.photo = dataUrl;
+      } else {
+        alert('El archivo no es una imagen válida.');
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   saveProfile() {

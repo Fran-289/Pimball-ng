@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
+import { SecurityService } from '../../core/services/security.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +37,7 @@ export class Inventory implements OnInit {
     estimatedCost: 0
   };
 
-  constructor(private dataService: DataService, private cdr: ChangeDetectorRef) {}
+  constructor(private dataService: DataService, private security: SecurityService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadData();
@@ -132,43 +133,66 @@ export class Inventory implements OnInit {
 
   onPhotoChange(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
+    if (!file) return;
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            this.formMachine.photo = canvas.toDataURL('image/jpeg', 0.7);
-          } else {
-            this.formMachine.photo = e.target.result;
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    // VUL-6: Validate file is actually an image
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Solo se permiten archivos de imagen (JPEG, PNG, GIF, WebP).');
+      return;
     }
+
+    // Limit file size to 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen es demasiado grande. Máximo: 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      // VUL-6: Validate the data URL is a real image
+      const dataUrl = this.security.sanitizeDataUrl(e.target.result);
+      if (!dataUrl) {
+        alert('El archivo no es una imagen válida.');
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          this.formMachine.photo = canvas.toDataURL('image/jpeg', 0.7);
+        } else {
+          this.formMachine.photo = dataUrl;
+        }
+      };
+      img.onerror = () => {
+        alert('No se pudo procesar la imagen.');
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
   }
 
   viewImage(photoUrl: string) {
