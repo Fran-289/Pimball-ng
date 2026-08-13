@@ -7,7 +7,9 @@ import {
   CheckCircle, AlertCircle, PlusCircle, Plus, Lock, BarChart2, X, TriangleAlert, Save, RefreshCw,
   Download, AlertTriangle, FileSpreadsheet, User, Activity, Upload, ArrowLeft, ArrowRight,
   CalendarClock, TrendingDown, TrendingUp, ClipboardList, CalendarDays, CalendarCheck, Moon, Sun, Camera, Info,
-  Bell, AlertOctagon, BellOff, Award, Code, ZoomIn, FileText
+  Bell, AlertOctagon, BellOff, Award, Code, ZoomIn, FileText,
+  Palette, Accessibility, ScanFace, Globe, Type, Settings, Database, History, BellRing, Delete, Shield,
+  Fingerprint, Monitor
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -22,7 +24,9 @@ export const appConfig: ApplicationConfig = {
       CheckCircle, AlertCircle, PlusCircle, Plus, Lock, BarChart2, X, TriangleAlert, Save, RefreshCw,
       Download, AlertTriangle, FileSpreadsheet, User, Activity, Upload, ArrowLeft, ArrowRight,
       CalendarClock, TrendingDown, TrendingUp, ClipboardList, CalendarDays, CalendarCheck, Moon, Sun, Camera, Info,
-      Bell, AlertOctagon, BellOff, Award, Code, ZoomIn, FileText
+      Bell, AlertOctagon, BellOff, Award, Code, ZoomIn, FileText,
+      Palette, Accessibility, ScanFace, Globe, Type, Settings, Database, History, BellRing, Delete, Shield,
+      Fingerprint, Monitor
     }))
   ]
 };

@@ -56,7 +56,13 @@ export class Cuts implements OnInit {
   }
 
   loadData() {
-    this.cuts = this.dataService.getCuts().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.cuts = this.dataService.getCuts().sort((a, b) => {
+      const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (diff === 0) {
+        return (b.displayId || '').localeCompare(a.displayId || '');
+      }
+      return diff;
+    });
     this.locations = this.dataService.getLocations();
     this.machines = this.dataService.getMachines();
     this.buildGroupedHistory();
@@ -189,7 +195,7 @@ export class Cuts implements OnInit {
 
       return {
         ...loc,
-        months: Array.from(loc.monthsMap.values()).sort((a: any, b: any) => a.monthKey.localeCompare(b.monthKey))
+        months: Array.from(loc.monthsMap.values()).sort((a: any, b: any) => b.monthKey.localeCompare(a.monthKey))
       };
     }).sort((a, b) => a.locationName.localeCompare(b.locationName));
     

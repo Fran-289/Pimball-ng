@@ -6,6 +6,7 @@ import { Tickets } from './features/tickets/tickets';
 import { Backups } from './features/backups/backups';
 import { Audit } from './features/audit/audit';
 import { Records } from './features/records/records';
+import { Settings } from './features/settings/settings';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'tickets', component: Tickets },
   { path: 'backups', component: Backups },
   { path: 'audit', component: Audit },
+  { path: 'settings', component: Settings },
   { path: '**', redirectTo: 'dashboard' }
 ];

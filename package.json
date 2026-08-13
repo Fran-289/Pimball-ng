@@ -23,6 +23,7 @@
     "@capacitor/app": "^8.1.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/toast": "^8.0.1",
+    "@capgo/capacitor-native-biometric": "^8.6.5",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "jspdf": "^4.2.1",

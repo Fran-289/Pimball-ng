@@ -8,7 +8,7 @@
   
   <div class="header-actions flex items-center gap-4">
     <div class="user-profile flex items-center gap-3 cursor-pointer group" (click)="openInfoModal()">
-      <div class="p-0 outline-none border-none transition-transform" title="Ver Perfil" (click)="openImageModal($event)">
+      <div class="p-0 outline-none border-none transition-transform" title="Configuración">
         @if (userProfile?.photo && userProfile?.photo !== 'mascot.png') {
           <img class="w-10 h-10 rounded-full object-cover border-2 border-accentPrimary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-110 group-hover:border-success transition-all" [src]="userProfile.photo" alt="Usuario">
         } @else {
@@ -24,127 +24,7 @@
   </div>
 </header>
 
-<!-- Modal de Información de Perfil -->
-@if (isInfoModalOpen) {
-  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-sm shadow-2xl scale-100 transition-transform max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center p-6 border-b border-borderColor shrink-0">
-        <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2">
-          <i-lucide name="user" class="text-accentPrimary"></i-lucide>
-          Perfil de Usuario
-        </h3>
-        <button class="btn-icon" (click)="closeInfoModal()"><i-lucide name="x"></i-lucide></button>
-      </div>
-      
-      <div class="p-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
-        <div class="flex flex-col items-center gap-3 mb-2">
-          <img [src]="userProfile?.photo || 'mascot.png'" class="w-24 h-24 rounded-full object-cover border-4 border-bgMain shadow-lg cursor-pointer hover:scale-105 transition-transform" alt="Foto Actual" (click)="openImageModal($event)">
-        </div>
 
-        <div class="bg-black/10 border border-borderColor rounded-xl p-4">
-          <p class="text-xs text-textSecondary mb-1">Nombre</p>
-          <p class="text-sm font-bold text-textPrimary mb-3">{{ userProfile?.name || 'Administrador' }}</p>
-          
-          <p class="text-xs text-textSecondary mb-1">Correo Electrónico</p>
-          <p class="text-sm font-bold text-textPrimary mb-3">{{ userProfile?.email || 'admin@pinball.pro' }}</p>
-          
-          <p class="text-xs text-textSecondary mb-1">Nivel de Acceso</p>
-          <p class="text-sm font-bold text-success">Administrador Principal</p>
-        </div>
-
-        <div class="bg-black/10 border border-borderColor rounded-xl p-4 text-sm text-textSecondary">
-          <h4 class="font-bold text-textPrimary mb-2 flex items-center gap-2">
-            <i-lucide name="info" class="w-4 h-4 text-accentPrimary"></i-lucide> Acerca del Sistema
-          </h4>
-          <p class="mb-2 text-xs"><strong>Pinball NG</strong> es un sistema de gestión y control financiero diseñado para operadores de máquinas.</p>
-          <ul class="space-y-1 text-xs list-disc pl-4">
-            <li>Versión: 2.0.0 FDNO</li>
-            <li>Almacenamiento: Local (Navegador)</li>
-            <li>Módulos: Máquinas, Cortes, Tickets, Auditoría</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="px-6 py-4 flex justify-end gap-3 border-t border-borderColor bg-bgSecondary shrink-0">
-        <button class="w-full btn btn-primary flex items-center justify-center gap-2" (click)="openEditModal()">
-          <i-lucide name="edit-2" class="w-4 h-4"></i-lucide> Editar Perfil
-        </button>
-      </div>
-    </div>
-  </div>
-}
-
-<!-- Modal de Edición de Perfil -->
-@if (isEditModalOpen) {
-  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-sm shadow-2xl scale-100 transition-transform max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center p-6 border-b border-borderColor shrink-0">
-        <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2">
-          <i-lucide name="edit" class="text-accentPrimary"></i-lucide>
-          Editar Perfil
-        </h3>
-        <button class="btn-icon" (click)="closeEditModal()"><i-lucide name="x"></i-lucide></button>
-      </div>
-      
-      <form class="flex flex-col overflow-hidden" (ngSubmit)="saveProfile()">
-        <div class="p-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
-          <div class="flex flex-col items-center gap-3 mb-2 relative group">
-            <img [src]="editProfile.photo || 'mascot.png'" class="w-24 h-24 rounded-full object-cover border-4 border-bgMain shadow-lg" alt="Foto Actual">
-            <label class="cursor-pointer flex items-center justify-center gap-1 text-xs bg-bgMain hover:bg-white/10 px-3 py-1 rounded-full text-textSecondary transition-colors">
-              <i-lucide name="camera" class="w-3 h-3"></i-lucide> Cambiar Foto
-              <input type="file" accept="image/*" class="hidden" (change)="onPhotoChange($event)">
-            </label>
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-textSecondary mb-2 flex items-center gap-2">
-              <i-lucide name="edit-2" class="w-3 h-3"></i-lucide> Nombre
-            </label>
-            <input type="text" [(ngModel)]="editProfile.name" name="name" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-textSecondary mb-2 flex items-center gap-2">
-              <i-lucide name="mail" class="w-3 h-3"></i-lucide> Correo Electrónico
-            </label>
-            <input type="email" [(ngModel)]="editProfile.email" name="email" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
-          </div>
-
-          <!-- Dark Mode Toggle -->
-          <div class="flex items-center justify-between bg-black/10 p-4 rounded-xl border border-borderColor mt-2">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center bg-accentPrimary/20 text-accentPrimary">
-                <i-lucide [name]="isDarkMode ? 'moon' : 'sun'" class="w-4 h-4"></i-lucide>
-              </div>
-              <div>
-                <div class="font-bold text-sm text-textPrimary">Tema Oscuro</div>
-                <div class="text-[10px] text-textSecondary">Cambiar apariencia del sistema</div>
-              </div>
-            </div>
-            <button type="button" class="w-12 h-6 rounded-full bg-borderColor relative transition-colors" [ngClass]="{'bg-success': isDarkMode}" (click)="toggleTheme()">
-               <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform" [ngClass]="{'translate-x-6': isDarkMode, 'translate-x-0.5': !isDarkMode}"></div>
-            </button>
-          </div>
-        </div>
-
-        <div class="px-6 py-4 flex justify-end gap-3 border-t border-borderColor bg-bgSecondary shrink-0">
-          <button type="button" class="btn bg-white/5 hover:bg-white/10 text-textPrimary" (click)="closeEditModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-}
-
-<!-- Modal Preview Imagen -->
-@if (isImageModalOpen) {
-  <div class="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4 cursor-pointer" (click)="closeImageModal()">
-    <img [src]="userProfile?.photo || 'mascot.png'" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" alt="Foto en grande" (click)="$event.stopPropagation()">
-    <button class="absolute top-6 right-6 text-white hover:text-danger transition-colors bg-black/50 rounded-full p-2" (click)="closeImageModal()">
-      <i-lucide name="x" class="w-8 h-8"></i-lucide>
-    </button>
-  </div>
-}
 
 <!-- Modal de Notificaciones (Centered) -->
 @if (showNotifications) {
@@ -153,7 +33,7 @@
       <div class="flex justify-between items-center p-6 border-b border-borderColor shrink-0">
         <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2">
           <i-lucide name="bell" class="text-accentPrimary w-6 h-6"></i-lucide>
-          Centro de Notificaciones
+          {{ 'HEADER.NOTIFICATIONS_TITLE' | translate }}
         </h3>
       </div>
       
@@ -173,15 +53,15 @@
         } @empty {
           <div class="py-12 text-center text-textSecondary flex flex-col items-center">
             <i-lucide name="check-circle" class="w-16 h-16 mb-4 text-success opacity-50"></i-lucide>
-            <span class="text-lg font-bold">Todo al día</span>
-            <span class="text-sm mt-1">No tienes recordatorios de cortes pendientes.</span>
+            <span class="text-lg font-bold">{{ 'HEADER.ALL_GOOD' | translate }}</span>
+            <span class="text-sm mt-1">{{ 'HEADER.NO_NOTIFICATIONS' | translate }}</span>
           </div>
         }
       </div>
 
       <div class="px-6 py-4 flex justify-end gap-3 border-t border-borderColor bg-bgSecondary shrink-0">
         <button class="w-full btn btn-primary flex items-center justify-center gap-2" (click)="showNotifications = false">
-          Cerrar
+          {{ 'HEADER.CLOSE' | translate }}
         </button>
       </div>
     </div>

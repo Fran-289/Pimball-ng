@@ -1,0 +1,55 @@
+<div class="fixed inset-0 z-[100] bg-bgMain flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
+  
+  <div class="mb-8 text-center">
+    <div class="w-24 h-24 bg-bgSecondary border border-borderColor rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+      <i-lucide name="lock" class="w-10 h-10 text-accentPrimary"></i-lucide>
+    </div>
+    <h2 class="text-2xl font-heading font-bold text-textPrimary">Aplicación Bloqueada</h2>
+    <p class="text-textSecondary mt-1">Ingresa tu PIN de seguridad para continuar</p>
+  </div>
+
+  <div class="flex items-center justify-center gap-4 mb-8">
+    <div class="w-4 h-4 rounded-full border transition-all duration-300" 
+         [ngClass]="pin.length >= 1 ? 'bg-accentPrimary border-accentPrimary shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-borderColor bg-white/5'"></div>
+    <div class="w-4 h-4 rounded-full border transition-all duration-300" 
+         [ngClass]="pin.length >= 2 ? 'bg-accentPrimary border-accentPrimary shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-borderColor bg-white/5'"></div>
+    <div class="w-4 h-4 rounded-full border transition-all duration-300" 
+         [ngClass]="pin.length >= 3 ? 'bg-accentPrimary border-accentPrimary shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-borderColor bg-white/5'"></div>
+    <div class="w-4 h-4 rounded-full border transition-all duration-300" 
+         [ngClass]="pin.length >= 4 ? 'bg-accentPrimary border-accentPrimary shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'border-borderColor bg-white/5'"></div>
+  </div>
+
+  @if (errorMsg) {
+    <div class="text-danger font-bold mb-4 animate-in shake">{{ errorMsg }}</div>
+  }
+
+  <!-- Numpad -->
+  <div class="grid grid-cols-3 gap-x-6 gap-y-4 sm:gap-x-8 sm:gap-y-6 max-w-xs mx-auto">
+    <button class="numpad-btn" (click)="appendNum(1)">1</button>
+    <button class="numpad-btn" (click)="appendNum(2)">2</button>
+    <button class="numpad-btn" (click)="appendNum(3)">3</button>
+    
+    <button class="numpad-btn" (click)="appendNum(4)">4</button>
+    <button class="numpad-btn" (click)="appendNum(5)">5</button>
+    <button class="numpad-btn" (click)="appendNum(6)">6</button>
+    
+    <button class="numpad-btn" (click)="appendNum(7)">7</button>
+    <button class="numpad-btn" (click)="appendNum(8)">8</button>
+    <button class="numpad-btn" (click)="appendNum(9)">9</button>
+    
+    <!-- Biometric Button (if available and enabled) -->
+    @if (biometricAvailable && biometricEnabled) {
+      <button class="numpad-btn text-accentPrimary bg-accentPrimary/10 border-accentPrimary/30" (click)="promptBiometric()">
+        <i-lucide name="scan-face" class="w-8 h-8"></i-lucide>
+      </button>
+    } @else {
+      <div></div> <!-- empty placeholder -->
+    }
+    
+    <button class="numpad-btn" (click)="appendNum(0)">0</button>
+    
+    <button class="numpad-btn bg-white/5 border-white/10" (click)="deleteNum()">
+      <i-lucide name="delete" class="w-6 h-6"></i-lucide>
+    </button>
+  </div>
+</div>

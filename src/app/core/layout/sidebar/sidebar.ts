@@ -1,40 +1,23 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
+
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule, LucideAngularModule, CommonModule],
+  imports: [RouterLink, RouterLinkActive, CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
+  styleUrl: './sidebar.css'
 })
 export class Sidebar {
   @Input() isCollapsed = false;
   @Input() isOpenMobile = false;
   @Output() linkClicked = new EventEmitter<void>();
 
-  showCreditsModal = false;
-  isDeveloperImageModalOpen = false;
-
-  openDeveloperImage() {
-    this.isDeveloperImageModalOpen = true;
-  }
-
-  closeDeveloperImage() {
-    this.isDeveloperImageModalOpen = false;
-  }
-
   onLinkClick() {
     this.linkClicked.emit();
-  }
-
-  openCredits() {
-    this.showCreditsModal = true;
-  }
-
-  closeCredits() {
-    this.showCreditsModal = false;
   }
 }

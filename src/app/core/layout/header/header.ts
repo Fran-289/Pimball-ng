@@ -2,14 +2,16 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { DataService } from '../../services/data.service';
 import { SecurityService } from '../../services/security.service';
+import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [LucideAngularModule, FormsModule, CommonModule],
+  imports: [LucideAngularModule, FormsModule, CommonModule, TranslatePipe],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
@@ -17,18 +19,13 @@ export class Header implements OnInit {
   @Output() toggleSidebar = new EventEmitter<void>();
   pageTitle = 'Sistema';
   
-  isInfoModalOpen = false;
-  isEditModalOpen = false;
-  isImageModalOpen = false;
-
   isDarkMode = true;
   userProfile: any = {};
-  editProfile: any = {};
 
   notifications: any[] = [];
   showNotifications = false;
 
-  constructor(private dataService: DataService, private security: SecurityService, private router: Router) {
+  constructor(private dataService: DataService, private security: SecurityService, private router: Router, public auth: AuthService) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.updatePageTitle(event.urlAfterRedirects);
@@ -55,6 +52,9 @@ export class Header implements OnInit {
     const activeLocations = new Set(machines.filter(m => m.status === 'active').map(m => m.locationId));
     const locMap = new Map<string, any>();
     
+    const showCuts = localStorage.getItem('pm_notif_cuts') !== 'false';
+    const showTickets = localStorage.getItem('pm_notif_tickets') !== 'false';
+
     for (const c of cuts) {
       if (!c.isCancelled) {
         if (!locMap.has(c.locationId) || new Date(c.date).getTime() > new Date(locMap.get(c.locationId).date).getTime()) {
@@ -68,41 +68,59 @@ export class Header implements OnInit {
     const inThreeDays = new Date(today);
     inThreeDays.setDate(today.getDate() + 3);
 
-    for (const locId of locMap.keys()) {
-       if (!activeLocations.has(locId)) continue;
-       const latestCut = locMap.get(locId);
-       if (latestCut.nextCutDate) {
-          const nextDate = new Date(latestCut.nextCutDate);
-          // adjust timezone issue by adding timezone offset before getting time? 
-          // new Date("YYYY-MM-DD") creates UTC midnight. 
-          // Let's create it locally to match input type="date"
-          const [y, m, d] = latestCut.nextCutDate.split('-');
-          const localNextDate = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-          localNextDate.setHours(0,0,0,0);
-          
-          if (localNextDate <= inThreeDays) {
-             const loc = locations.find(l => l.id === locId);
-             const diffTime = localNextDate.getTime() - today.getTime();
-             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-             
-             if (diffDays >= 0) {
-               let timeText = diffDays === 0 ? 'hoy' : (diffDays === 1 ? 'mañana' : `en ${diffDays} días`);
-               this.notifications.push({
-                  id: Math.random().toString(),
-                  title: `Próximo Corte: ${loc ? loc.name : 'Ubicación'}`,
-                  message: `Recordatorio: próximo corte ${timeText} (día ${localNextDate.toLocaleDateString('es-ES')})`,
-                  type: 'warning'
-               });
-             } else {
-               this.notifications.push({
-                  id: Math.random().toString(),
-                  title: `Corte Atrasado: ${loc ? loc.name : 'Ubicación'}`,
-                  message: `El corte estaba programado para el día ${localNextDate.toLocaleDateString('es-ES')} (hace ${Math.abs(diffDays)} días)`,
-                  type: 'danger'
-               });
-             }
-          }
-       }
+    if (showCuts) {
+      for (const locId of locMap.keys()) {
+         if (!activeLocations.has(locId)) continue;
+         const latestCut = locMap.get(locId);
+         if (latestCut.nextCutDate) {
+            const nextDate = new Date(latestCut.nextCutDate);
+            const [y, m, d] = latestCut.nextCutDate.split('-');
+            const localNextDate = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            localNextDate.setHours(0,0,0,0);
+            
+            if (localNextDate <= inThreeDays) {
+               const loc = locations.find(l => l.id === locId);
+               const diffTime = localNextDate.getTime() - today.getTime();
+               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+               
+               if (diffDays >= 0) {
+                 let timeText = diffDays === 0 ? 'hoy' : (diffDays === 1 ? 'mañana' : `en ${diffDays} días`);
+                 this.notifications.push({
+                    id: Math.random().toString(),
+                    title: `Próximo Corte: ${loc ? loc.name : 'Ubicación'}`,
+                    message: `Recordatorio: próximo corte ${timeText} (día ${localNextDate.toLocaleDateString('es-ES')})`,
+                    type: 'warning'
+                 });
+               } else {
+                 this.notifications.push({
+                    id: Math.random().toString(),
+                    title: `Corte Atrasado: ${loc ? loc.name : 'Ubicación'}`,
+                    message: `El corte estaba programado para el día ${localNextDate.toLocaleDateString('es-ES')} (hace ${Math.abs(diffDays)} días)`,
+                    type: 'danger'
+                 });
+               }
+            }
+         }
+      }
+    }
+
+    const tickets = this.dataService.getTickets();
+    if (showTickets) {
+      const activeTickets = tickets.filter(t => t.status === 'open' || t.status === 'in_progress');
+      
+      for (const t of activeTickets) {
+         const m = machines.find(mac => mac.id === t.machineId);
+         const mName = m ? m.name : t.machineId;
+         const statusStr = t.status === 'open' ? 'ABIERTO' : 'EN PROGRESO';
+         const dateStr = new Date(t.createdAt).toLocaleDateString('es-ES');
+         
+         this.notifications.unshift({
+            id: Math.random().toString(),
+            title: `[${statusStr}] Reparación: ${mName}`,
+            message: `${t.title} (creado el ${dateStr})`,
+            type: t.status === 'open' ? 'danger' : 'warning'
+         });
+      }
     }
   }
 
@@ -117,6 +135,8 @@ export class Header implements OnInit {
     else if (url.includes('/tickets')) this.pageTitle = 'Reparaciones';
     else if (url.includes('/audit')) this.pageTitle = 'Auditoría';
     else if (url.includes('/backups')) this.pageTitle = 'Respaldos';
+    else if (url.includes('/records')) this.pageTitle = 'Registros';
+    else if (url.includes('/settings')) this.pageTitle = 'Configuración';
     else this.pageTitle = 'Sistema';
   }
 
@@ -134,65 +154,6 @@ export class Header implements OnInit {
   }
 
   openInfoModal() {
-    this.isInfoModalOpen = true;
-  }
-
-  closeInfoModal() {
-    this.isInfoModalOpen = false;
-  }
-
-  openEditModal() {
-    this.isInfoModalOpen = false;
-    this.editProfile = { ...this.userProfile };
-    this.isEditModalOpen = true;
-  }
-
-  closeEditModal() {
-    this.isEditModalOpen = false;
-  }
-
-  openImageModal(event: Event) {
-    event.stopPropagation();
-    this.isImageModalOpen = true;
-  }
-
-  closeImageModal() {
-    this.isImageModalOpen = false;
-  }
-
-  onPhotoChange(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // VUL-6: Validate file is actually an image
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
-    if (!validTypes.includes(file.type)) {
-      alert('Solo se permiten archivos de imagen (JPEG, PNG, GIF, WebP).');
-      return;
-    }
-
-    // Limit file size to 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      alert('La imagen es demasiado grande. Máximo: 5MB.');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const dataUrl = this.security.sanitizeDataUrl(e.target.result);
-      if (dataUrl) {
-        this.editProfile.photo = dataUrl;
-      } else {
-        alert('El archivo no es una imagen válida.');
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-
-  saveProfile() {
-    this.userProfile = { ...this.editProfile };
-    this.dataService.saveUserProfile(this.userProfile);
-    this.isEditModalOpen = false;
-    this.isInfoModalOpen = true;
+    this.router.navigate(['/settings']);
   }
 }

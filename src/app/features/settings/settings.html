@@ -1,0 +1,348 @@
+<div class="h-full flex flex-col md:flex-row bg-bgMain animate-in fade-in duration-300">
+  <!-- Sidebar Menu (Categorías) -->
+  <div class="w-full md:w-64 shrink-0 border-r border-borderColor bg-bgSecondary flex flex-col overflow-y-auto">
+    <div class="p-6 pb-2">
+      <h2 class="text-xl font-heading font-bold text-textPrimary">{{ 'SETTINGS.TITLE' | translate }}</h2>
+    </div>
+    <div class="flex-1 p-4 space-y-1">
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'profile' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'profile'">
+        <i-lucide name="user" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_PROFILE' | translate }}
+      </button>
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'appearance' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'appearance'">
+        <i-lucide name="palette" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_APPEARANCE' | translate }}
+      </button>
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'security' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'security'">
+        <i-lucide name="shield" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_SECURITY' | translate }}
+      </button>
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'notifications' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'notifications'">
+        <i-lucide name="bell" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_NOTIFICATIONS' | translate }}
+      </button>
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'accessibility' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'accessibility'">
+        <i-lucide name="accessibility" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_ACCESSIBILITY' | translate }}
+      </button>
+      
+      <div class="pt-4 pb-2 mt-4 border-t border-borderColor px-4 text-xs font-bold text-textSecondary uppercase tracking-wider">Sistema</div>
+      <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-left" 
+              [ngClass]="activeTab === 'system' ? 'bg-accentPrimary text-white shadow-lg' : 'text-textSecondary hover:bg-black/5 hover:text-textPrimary'"
+              (click)="activeTab = 'system'">
+        <i-lucide name="wrench" class="w-5 h-5"></i-lucide> {{ 'SETTINGS.TAB_SYSTEM' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido de la categoría -->
+  <div class="flex-1 p-6 md:p-10 overflow-y-auto">
+    
+    <!-- Perfil -->
+    @if (activeTab === 'profile') {
+      <div class="max-w-2xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="user" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.PROFILE_TITLE' | translate }}
+        </h3>
+        
+        <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm">
+          <div class="flex flex-col items-center gap-4 mb-6">
+            <div class="relative group">
+              <img [src]="editProfile.photo || 'mascot.png'" class="w-24 h-24 rounded-full object-cover border-4 border-bgMain shadow-lg" alt="Foto">
+              <label class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                <i-lucide name="camera" class="w-6 h-6 text-white"></i-lucide>
+                <input type="file" accept="image/*" class="hidden" (change)="onPhotoChange($event)">
+              </label>
+            </div>
+            <p class="text-sm text-textSecondary">{{ 'SETTINGS.CHANGE_PHOTO' | translate }}</p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'SETTINGS.PROFILE_NAME' | translate }}</label>
+              <input type="text" [(ngModel)]="editProfile.name" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:border-accentPrimary focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'SETTINGS.PROFILE_EMAIL' | translate }}</label>
+              <input type="email" [(ngModel)]="editProfile.email" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:border-accentPrimary focus:outline-none">
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-end">
+            <button class="btn btn-primary" (click)="saveProfile()">{{ 'SETTINGS.SAVE_CHANGES' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Apariencia -->
+    @if (activeTab === 'appearance') {
+      <div class="max-w-2xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="palette" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.APPEARANCE_TITLE' | translate }}
+        </h3>
+        <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm">
+          
+          <div class="flex flex-col gap-4 p-4 bg-black/5 rounded-xl border border-borderColor">
+            <div class="flex items-center gap-4 mb-2">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-accentPrimary/20 text-accentPrimary">
+                <i-lucide [name]="themeMode === 'dark' ? 'moon' : (themeMode === 'light' ? 'sun' : 'monitor')" class="w-6 h-6"></i-lucide>
+              </div>
+              <div>
+                <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.DARK_MODE' | translate }}</h4>
+                <p class="text-sm text-textSecondary">{{ 'SETTINGS.DARK_MODE_DESC' | translate }}</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <button class="p-3 rounded-lg border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="themeMode === 'light' ? 'border-accentPrimary bg-accentPrimary/10 text-accentPrimary shadow-sm' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="setTheme('light')">
+                <i-lucide name="sun" class="w-5 h-5"></i-lucide>
+                <span class="text-sm font-bold">{{ 'SETTINGS.THEME_LIGHT' | translate }}</span>
+              </button>
+              <button class="p-3 rounded-lg border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="themeMode === 'dark' ? 'border-accentPrimary bg-accentPrimary/10 text-accentPrimary shadow-sm' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="setTheme('dark')">
+                <i-lucide name="moon" class="w-5 h-5"></i-lucide>
+                <span class="text-sm font-bold">{{ 'SETTINGS.THEME_DARK' | translate }}</span>
+              </button>
+              <button class="p-3 rounded-lg border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="themeMode === 'auto' ? 'border-accentPrimary bg-accentPrimary/10 text-accentPrimary shadow-sm' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="setTheme('auto')">
+                <i-lucide name="monitor" class="w-5 h-5"></i-lucide>
+                <span class="text-sm font-bold">{{ 'SETTINGS.THEME_AUTO' | translate }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    }
+
+    <!-- Seguridad -->
+    @if (activeTab === 'security') {
+      <div class="max-w-2xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="shield" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.SECURITY_TITLE' | translate }}
+        </h3>
+        
+        <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm space-y-6">
+          
+          @if (auth.hasPinConfigured()) {
+            <div class="bg-success/10 border border-success/30 rounded-xl p-5 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-success/20 text-success flex items-center justify-center">
+                  <i-lucide name="check-circle" class="w-6 h-6"></i-lucide>
+                </div>
+                <div>
+                  <h4 class="font-bold text-success text-lg">{{ 'SETTINGS.SECURITY_PIN_ACTIVE' | translate }}</h4>
+                  <p class="text-sm text-success/80">{{ 'SETTINGS.SECURITY_APP_PROTECTED' | translate }}</p>
+                </div>
+              </div>
+              <button class="btn btn-outline border-danger text-danger hover:bg-danger hover:text-white" (click)="removePin()">
+                {{ 'SETTINGS.REMOVE_PIN' | translate }}
+              </button>
+            </div>
+          } @else {
+            <div class="p-4 bg-black/5 rounded-xl border border-borderColor">
+              <h4 class="font-bold text-textPrimary mb-4">{{ 'SETTINGS.SET_PIN' | translate }}</h4>
+              <div class="flex gap-4">
+                <input type="password" maxlength="4" [(ngModel)]="pinInput" placeholder="1234" class="w-48 bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:border-accentPrimary focus:outline-none tracking-widest text-center text-lg">
+                <button class="btn btn-primary" (click)="saveSecurity()">{{ 'SETTINGS.SAVE_CHANGES' | translate }}</button>
+              </div>
+            </div>
+          }
+
+          @if (biometricAvailable) {
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-black/5 rounded-xl border border-borderColor">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-accentPrimary/20 text-accentPrimary flex items-center justify-center">
+                    <i-lucide name="fingerprint" class="w-6 h-6"></i-lucide>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.FINGERPRINT' | translate }}</h4>
+                    <p class="text-sm text-textSecondary">{{ 'SETTINGS.FINGERPRINT_DESC' | translate }}</p>
+                  </div>
+                </div>
+                <button class="w-14 h-8 rounded-full relative transition-colors" [ngClass]="fingerprintEnabled ? 'bg-success' : 'bg-borderColor'" (click)="fingerprintEnabled = !fingerprintEnabled; saveSecurity()">
+                  <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-transform shadow-md" [ngClass]="fingerprintEnabled ? 'translate-x-7' : 'translate-x-1'"></div>
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-4 bg-black/5 rounded-xl border border-borderColor">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full bg-accentPrimary/20 text-accentPrimary flex items-center justify-center">
+                    <i-lucide name="scan-face" class="w-6 h-6"></i-lucide>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.FACEID' | translate }}</h4>
+                    <p class="text-sm text-textSecondary">{{ 'SETTINGS.FACEID_DESC' | translate }}</p>
+                  </div>
+                </div>
+                <button class="w-14 h-8 rounded-full relative transition-colors" [ngClass]="faceIdEnabled ? 'bg-success' : 'bg-borderColor'" (click)="faceIdEnabled = !faceIdEnabled; saveSecurity()">
+                  <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-transform shadow-md" [ngClass]="faceIdEnabled ? 'translate-x-7' : 'translate-x-1'"></div>
+                </button>
+              </div>
+            </div>
+          }
+          
+        </div>
+      </div>
+    }
+
+    <!-- Notificaciones -->
+    @if (activeTab === 'notifications') {
+      <div class="max-w-2xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="bell" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.NOTIFICATIONS_TITLE' | translate }}
+        </h3>
+        
+        <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between p-4 bg-black/5 rounded-xl border border-borderColor">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-accentPrimary/20 text-accentPrimary">
+                <i-lucide name="wrench" class="w-6 h-6"></i-lucide>
+              </div>
+              <div>
+                <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.NOTIF_TICKETS' | translate }}</h4>
+                <p class="text-sm text-textSecondary">{{ 'SETTINGS.NOTIF_TICKETS_DESC' | translate }}</p>
+              </div>
+            </div>
+            <button class="w-14 h-8 rounded-full relative transition-colors" [ngClass]="notifications.tickets ? 'bg-success' : 'bg-borderColor'" (click)="toggleNotification('tickets')">
+              <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-transform shadow-md" [ngClass]="notifications.tickets ? 'translate-x-7' : 'translate-x-1'"></div>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-4 bg-black/5 rounded-xl border border-borderColor">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-success/20 text-success">
+                <i-lucide name="dollar-sign" class="w-6 h-6"></i-lucide>
+              </div>
+              <div>
+                <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.NOTIF_CUTS' | translate }}</h4>
+                <p class="text-sm text-textSecondary">{{ 'SETTINGS.NOTIF_CUTS_DESC' | translate }}</p>
+              </div>
+            </div>
+            <button class="w-14 h-8 rounded-full relative transition-colors" [ngClass]="notifications.cuts ? 'bg-success' : 'bg-borderColor'" (click)="toggleNotification('cuts')">
+              <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-transform shadow-md" [ngClass]="notifications.cuts ? 'translate-x-7' : 'translate-x-1'"></div>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between p-4 bg-black/5 rounded-xl border border-borderColor">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-500/20 text-purple-500">
+                <i-lucide name="info" class="w-6 h-6"></i-lucide>
+              </div>
+              <div>
+                <h4 class="font-bold text-textPrimary text-lg">{{ 'SETTINGS.NOTIF_SYSTEM' | translate }}</h4>
+                <p class="text-sm text-textSecondary">{{ 'SETTINGS.NOTIF_SYSTEM_DESC' | translate }}</p>
+              </div>
+            </div>
+            <button class="w-14 h-8 rounded-full relative transition-colors" [ngClass]="notifications.system ? 'bg-success' : 'bg-borderColor'" (click)="toggleNotification('system')">
+              <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-transform shadow-md" [ngClass]="notifications.system ? 'translate-x-7' : 'translate-x-1'"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Accesibilidad -->
+    @if (activeTab === 'accessibility') {
+      <div class="max-w-2xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="accessibility" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.ACCESSIBILITY_TITLE' | translate }}
+        </h3>
+        
+        <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm space-y-6">
+          <!-- Idioma -->
+          <div>
+            <h4 class="font-bold text-textPrimary mb-3 flex items-center gap-2">
+              <i-lucide name="globe" class="w-5 h-5 text-accentPrimary"></i-lucide> {{ 'SETTINGS.LANGUAGE' | translate }}
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <button class="p-4 rounded-xl border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="language === 'es' ? 'border-accentPrimary bg-accentPrimary/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] text-accentPrimary' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="changeLanguage('es')">
+                <span class="text-2xl">🇪🇸</span>
+                <span class="font-bold">{{ 'SETTINGS.LANGUAGE_ES' | translate }}</span>
+              </button>
+              <button class="p-4 rounded-xl border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="language === 'en' ? 'border-accentPrimary bg-accentPrimary/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] text-accentPrimary' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="changeLanguage('en')">
+                <span class="text-2xl">🇺🇸</span>
+                <span class="font-bold">{{ 'SETTINGS.LANGUAGE_EN' | translate }}</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="border-t border-borderColor pt-6"></div>
+
+          <!-- Tamaño de letra -->
+          <div>
+            <h4 class="font-bold text-textPrimary mb-3 flex items-center gap-2">
+              <i-lucide name="type" class="w-5 h-5 text-accentPrimary"></i-lucide> {{ 'SETTINGS.TEXT_SIZE' | translate }}
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <button class="p-4 rounded-xl border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="fontSize === 'normal' ? 'border-accentPrimary bg-accentPrimary/10 text-accentPrimary' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="changeFontSize('normal')">
+                <span class="text-lg font-bold">Aa</span>
+                <span class="text-sm">{{ 'SETTINGS.TEXT_SIZE_NORMAL' | translate }}</span>
+              </button>
+              <button class="p-4 rounded-xl border transition-all flex flex-col items-center gap-2"
+                      [ngClass]="fontSize === 'large' ? 'border-accentPrimary bg-accentPrimary/10 text-accentPrimary' : 'border-borderColor bg-bgMain hover:border-textSecondary text-textPrimary'"
+                      (click)="changeFontSize('large')">
+                <span class="text-2xl font-bold">Aa</span>
+                <span class="text-sm">{{ 'SETTINGS.TEXT_SIZE_LARGE' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Herramientas del Sistema -->
+    @if (activeTab === 'system') {
+      <div class="max-w-3xl animate-in slide-in-from-right-4">
+        <h3 class="text-2xl font-bold text-textPrimary mb-6 flex items-center gap-2">
+          <i-lucide name="wrench" class="text-accentPrimary"></i-lucide> {{ 'SETTINGS.SYSTEM_TITLE' | translate }}
+        </h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm hover:border-accentPrimary/50 hover:shadow-lg transition-all cursor-pointer group" (click)="navigate('/backups')">
+            <div class="w-14 h-14 rounded-2xl bg-accentPrimary/20 text-accentPrimary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i-lucide name="database" class="w-7 h-7"></i-lucide>
+            </div>
+            <h4 class="text-xl font-bold text-textPrimary mb-2">{{ 'SETTINGS.SYSTEM_BACKUPS' | translate }}</h4>
+            <p class="text-sm text-textSecondary mb-4">{{ 'SETTINGS.SYSTEM_BACKUPS_DESC' | translate }}</p>
+          </div>
+
+          <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm hover:border-accentPrimary/50 hover:shadow-lg transition-all cursor-pointer group" (click)="navigate('/audit')">
+            <div class="w-14 h-14 rounded-2xl bg-warning/20 text-warning flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i-lucide name="clipboard-list" class="w-7 h-7"></i-lucide>
+            </div>
+            <h4 class="text-xl font-bold text-textPrimary mb-2">{{ 'SETTINGS.SYSTEM_AUDIT' | translate }}</h4>
+            <p class="text-sm text-textSecondary mb-4">{{ 'SETTINGS.SYSTEM_AUDIT_DESC' | translate }}</p>
+          </div>
+
+          <div class="bg-bgSecondary border border-borderColor rounded-2xl p-6 shadow-sm hover:border-accentPrimary/50 hover:shadow-lg transition-all cursor-pointer group" (click)="navigate('/records')">
+            <div class="w-14 h-14 rounded-2xl bg-success/20 text-success flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <i-lucide name="history" class="w-7 h-7"></i-lucide>
+            </div>
+            <h4 class="text-xl font-bold text-textPrimary mb-2">{{ 'SETTINGS.SYSTEM_RECORDS' | translate }}</h4>
+            <p class="text-sm text-textSecondary mb-4">{{ 'SETTINGS.SYSTEM_RECORDS_DESC' | translate }}</p>
+          </div>
+
+        </div>
+      </div>
+    }
+
+  </div>
+</div>
