@@ -1,7 +1,7 @@
 <div class="p-6">
   <div class="mb-8">
-    <h2 class="text-3xl font-heading font-bold text-textPrimary">Centro de Respaldos y Exportación Segura</h2>
-    <p class="text-textSecondary mt-2">Protege tu información creando copias de seguridad o exportando tus datos.</p>
+    <h2 class="text-3xl font-heading font-bold text-textPrimary">{{ 'BACKUPS.TITLE' | translate }}</h2>
+    <p class="text-textSecondary mt-2">{{ 'BACKUPS.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -10,16 +10,16 @@
     <div class="glass-panel p-6 sm:p-8">
       <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2 mb-4">
         <i-lucide name="database-backup" class="text-accentPrimary"></i-lucide>
-        Base de Datos (JSON)
+        {{ 'BACKUPS.DB_JSON' | translate }}
       </h3>
-      <p class="text-textSecondary text-sm mb-6">Genera un archivo JSON con toda la información de tu sistema (Máquinas, Cortes, Tickets, Ubicaciones y Auditoría). Úsalo para restaurar tu sistema en otro dispositivo o en caso de emergencia.</p>
+      <p class="text-textSecondary text-sm mb-6">{{ 'BACKUPS.DB_DESC' | translate }}</p>
       
       <div class="flex flex-col sm:flex-row gap-4">
         <button class="btn btn-primary flex-1 justify-center whitespace-nowrap" (click)="exportBackup()">
-          <i-lucide name="download" class="w-5 h-5"></i-lucide> Descargar Respaldo Completo
+          <i-lucide name="download" class="w-5 h-5"></i-lucide> {{ 'BACKUPS.DOWNLOAD_BACKUP' | translate }}
         </button>
         <button class="btn bg-white/10 hover:bg-white/20 text-textPrimary flex-1 justify-center whitespace-nowrap" (click)="triggerFileInput()">
-          <i-lucide name="upload" class="w-5 h-5"></i-lucide> Restaurar Sistema
+          <i-lucide name="upload" class="w-5 h-5"></i-lucide> {{ 'BACKUPS.RESTORE_SYSTEM' | translate }}
         </button>
         <input type="file" id="import-file" class="hidden" accept=".json" (change)="onFileSelected($event)">
       </div>
@@ -27,14 +27,14 @@
       <div class="mt-6 p-4 bg-accentPrimary/10 border border-accentPrimary/30 rounded-xl mb-3">
         <p class="text-xs text-textPrimary flex items-start gap-2 leading-relaxed">
           <i-lucide name="info" class="w-4 h-4 text-accentPrimary shrink-0 mt-[1px]"></i-lucide>
-          <span><strong>Recomendación de Seguridad:</strong> Te sugerimos descargar un respaldo general del sistema al menos <span class="text-accentPrimary font-bold">cada 15 días</span> para mantener resguardada toda tu información.</span>
+          <span><strong>{{ 'BACKUPS.SECURITY_REC' | translate }}</strong> {{ 'BACKUPS.SECURITY_DESC' | translate }} <span class="text-accentPrimary font-bold">{{ 'BACKUPS.EVERY_15_DAYS' | translate }}</span> {{ 'BACKUPS.SECURITY_END' | translate }}</span>
         </p>
       </div>
 
       <div class="p-4 bg-warning/10 border border-warning/30 rounded-xl">
         <p class="text-xs text-warning flex items-start gap-2">
           <i-lucide name="alert-triangle" class="w-4 h-4 shrink-0 mt-[2px]"></i-lucide>
-          Al restaurar un respaldo, se sobreescribirán todos los datos actuales con los del archivo. ¡Asegúrate de que es el archivo correcto!
+          {{ 'BACKUPS.WARNING_RESTORE' | translate }}
         </p>
       </div>
     </div>
@@ -43,22 +43,22 @@
     <div class="glass-panel p-6 sm:p-8 flex flex-col">
       <h3 class="text-xl font-heading font-bold text-textPrimary flex items-center gap-2 mb-4">
         <i-lucide name="file-spreadsheet" class="text-success"></i-lucide>
-        Exportar Reportes (Excel / PDF)
+        {{ 'BACKUPS.EXPORT_REPORTS' | translate }}
       </h3>
-      <p class="text-textSecondary text-sm mb-6">Descarga tus datos en formato tabular para analizarlos o presentar reportes estructurados con formato profesional.</p>
+      <p class="text-textSecondary text-sm mb-6">{{ 'BACKUPS.EXPORT_DESC' | translate }}</p>
       
       <div class="flex flex-col gap-3 flex-1">
         <!-- Machines -->
         <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
           <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
-            <i-lucide name="package" class="w-5 h-5 text-accentSecondary"></i-lucide> Inventario de Máquinas
+            <i-lucide name="package" class="w-5 h-5 text-accentSecondary"></i-lucide> {{ 'BACKUPS.MACHINES_INV' | translate }}
           </span>
           <div class="flex gap-2 w-full sm:w-auto">
             <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportMachines('excel')" title="Exportar a Excel">
-              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.EXCEL' | translate }}
             </button>
             <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportMachines('pdf')" title="Exportar a PDF">
-              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.PDF' | translate }}
             </button>
           </div>
         </div>
@@ -66,14 +66,14 @@
         <!-- Cuts -->
         <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
           <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
-            <i-lucide name="dollar-sign" class="w-5 h-5 text-accentSecondary"></i-lucide> Reporte de Cortes
+            <i-lucide name="dollar-sign" class="w-5 h-5 text-accentSecondary"></i-lucide> {{ 'BACKUPS.CUTS_REPORT' | translate }}
           </span>
           <div class="flex gap-2 w-full sm:w-auto">
             <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportCuts('excel')" title="Exportar a Excel">
-              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.EXCEL' | translate }}
             </button>
             <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportCuts('pdf')" title="Exportar a PDF">
-              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.PDF' | translate }}
             </button>
           </div>
         </div>
@@ -81,14 +81,14 @@
         <!-- Tickets -->
         <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
           <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
-            <i-lucide name="wrench" class="w-5 h-5 text-accentSecondary"></i-lucide> Historial de Reparaciones
+            <i-lucide name="wrench" class="w-5 h-5 text-accentSecondary"></i-lucide> {{ 'BACKUPS.REPAIRS_HISTORY' | translate }}
           </span>
           <div class="flex gap-2 w-full sm:w-auto">
             <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportTickets('excel')" title="Exportar a Excel">
-              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.EXCEL' | translate }}
             </button>
             <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportTickets('pdf')" title="Exportar a PDF">
-              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.PDF' | translate }}
             </button>
           </div>
         </div>
@@ -96,14 +96,14 @@
         <!-- Audit Logs -->
         <div class="flex flex-col sm:flex-row items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 gap-3 hover:bg-white/10 transition-colors">
           <span class="flex items-center gap-2 text-textPrimary font-medium w-full sm:w-auto">
-            <i-lucide name="clipboard-list" class="w-5 h-5 text-accentSecondary"></i-lucide> Registros de Auditoría
+            <i-lucide name="clipboard-list" class="w-5 h-5 text-accentSecondary"></i-lucide> {{ 'BACKUPS.AUDIT_LOGS' | translate }}
           </span>
           <div class="flex gap-2 w-full sm:w-auto">
             <button class="btn flex-1 sm:flex-none justify-center bg-success/20 hover:bg-success/40 text-success border border-success/30 px-3 py-1.5" (click)="exportAudit('excel')" title="Exportar a Excel">
-              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> Excel
+              <i-lucide name="file-spreadsheet" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.EXCEL' | translate }}
             </button>
             <button class="btn flex-1 sm:flex-none justify-center bg-error/20 hover:bg-error/40 text-error border border-error/30 px-3 py-1.5" (click)="exportAudit('pdf')" title="Exportar a PDF">
-              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> PDF
+              <i-lucide name="file-text" class="w-4 h-4"></i-lucide> {{ 'BACKUPS.PDF' | translate }}
             </button>
           </div>
         </div>

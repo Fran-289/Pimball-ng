@@ -4,11 +4,12 @@ import { SecurityService } from '../../core/services/security.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule, FormsModule],
+  imports: [LucideAngularModule, CommonModule, FormsModule, TranslatePipe],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
   host: {

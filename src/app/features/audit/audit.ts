@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-audit',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule],
+  imports: [LucideAngularModule, CommonModule, TranslatePipe],
   templateUrl: './audit.html',
   host: {
     class: 'block w-full h-full'

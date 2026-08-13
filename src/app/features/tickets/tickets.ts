@@ -3,11 +3,12 @@ import { DataService } from '../../core/services/data.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule, FormsModule],
+  imports: [LucideAngularModule, CommonModule, FormsModule, TranslatePipe],
   templateUrl: './tickets.html',
   styleUrl: './tickets.css',
 })

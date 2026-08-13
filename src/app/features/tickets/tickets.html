@@ -1,12 +1,12 @@
 <div class="p-6">
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-      <h2 class="text-3xl font-heading font-bold text-textPrimary">Gestión de Mantenimiento y Soporte</h2>
-      <p class="text-textSecondary mt-2">Tablero Kanban para el seguimiento de tickets.</p>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">{{ 'TICKETS.TITLE' | translate }}</h2>
+      <p class="text-textSecondary mt-2">{{ 'TICKETS.SUBTITLE' | translate }}</p>
     </div>
     <button class="btn btn-primary" (click)="openModal()">
       <i-lucide name="plus-circle" class="w-5 h-5"></i-lucide>
-      Nuevo Ticket
+      {{ 'TICKETS.NEW_TICKET' | translate }}
     </button>
   </div>
 
@@ -14,7 +14,7 @@
     <!-- Abiertos -->
     <div class="glass-panel p-4 flex flex-col h-[calc(100vh-220px)]">
       <h3 class="flex justify-between items-center text-lg font-heading font-bold mb-4 pb-2 border-b border-danger/30 text-danger">
-        Abiertos
+        {{ 'TICKETS.OPEN' | translate }}
         <span class="text-xs bg-danger/20 px-2 py-1 rounded-full text-danger">{{ getTicketsByStatus('open').length }}</span>
       </h3>
       <div class="flex-1 overflow-y-auto pr-2 space-y-3">
@@ -34,7 +34,7 @@
     <!-- En Progreso -->
     <div class="glass-panel p-4 flex flex-col h-[calc(100vh-220px)]">
       <h3 class="flex justify-between items-center text-lg font-heading font-bold mb-4 pb-2 border-b border-warning/30 text-warning">
-        En Progreso
+        {{ 'TICKETS.IN_PROGRESS' | translate }}
         <span class="text-xs bg-warning/20 px-2 py-1 rounded-full text-warning">{{ getTicketsByStatus('progress').length }}</span>
       </h3>
       <div class="flex-1 overflow-y-auto pr-2 space-y-3">
@@ -54,7 +54,7 @@
     <!-- Cerrados -->
     <div class="glass-panel p-4 flex flex-col h-[calc(100vh-220px)]">
       <h3 class="flex justify-between items-center text-lg font-heading font-bold mb-4 pb-2 border-b border-success/30 text-success">
-        Cerrados
+        {{ 'TICKETS.CLOSED' | translate }}
         <span class="text-xs bg-success/20 px-2 py-1 rounded-full text-success">{{ getTicketsByStatus('closed').length }}</span>
       </h3>
       <div class="flex-1 overflow-y-auto pr-2 space-y-3">
@@ -78,13 +78,13 @@
   <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-bgSecondary border border-borderColor rounded-2xl w-full max-w-md shadow-2xl scale-100 transition-transform">
       <div class="flex justify-between items-center p-6 border-b border-borderColor">
-        <h3 class="text-xl font-heading font-bold text-textPrimary">Nuevo Ticket de Reparación</h3>
+        <h3 class="text-xl font-heading font-bold text-textPrimary">{{ 'TICKETS.NEW_REPAIR_TICKET' | translate }}</h3>
         <button class="btn-icon" (click)="closeModal()"><i-lucide name="x"></i-lucide></button>
       </div>
       
       <form class="p-6 flex flex-col gap-4" (ngSubmit)="saveTicket()">
         <div>
-          <label class="block text-sm font-semibold text-textSecondary mb-2">Máquina <span class="text-danger">*</span></label>
+          <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'TICKETS.MACHINE' | translate }} <span class="text-danger">*</span></label>
           <select [(ngModel)]="formTicket.machineId" name="machineId" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
             @for (m of machines; track m.id) {
               <option [value]="m.id">{{ m.id }} - {{ m.name }}</option>
@@ -93,27 +93,27 @@
         </div>
         
         <div>
-          <label class="block text-sm font-semibold text-textSecondary mb-2">Título de la Falla <span class="text-danger">*</span></label>
-          <input type="text" [ngModel]="formTicket.title" (ngModelChange)="formTicket.title = capitalizeFirst($event)" name="title" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Ej. Falla en flipper izquierdo">
+          <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'TICKETS.FAULT_TITLE' | translate }} <span class="text-danger">*</span></label>
+          <input type="text" [ngModel]="formTicket.title" (ngModelChange)="formTicket.title = capitalizeFirst($event)" name="title" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" [placeholder]="'TICKETS.FAULT_TITLE_HINT' | translate">
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-textSecondary mb-2">Descripción Detallada <span class="text-danger">*</span></label>
-          <textarea [ngModel]="formTicket.description" (ngModelChange)="formTicket.description = capitalizeFirst($event)" name="description" rows="3" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" placeholder="Describe el problema a detalle..."></textarea>
+          <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'TICKETS.DETAILED_DESC' | translate }} <span class="text-danger">*</span></label>
+          <textarea [ngModel]="formTicket.description" (ngModelChange)="formTicket.description = capitalizeFirst($event)" name="description" rows="3" required class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors" [placeholder]="'TICKETS.DETAILED_DESC_HINT' | translate"></textarea>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-textSecondary mb-2">Prioridad</label>
+          <label class="block text-sm font-semibold text-textSecondary mb-2">{{ 'TICKETS.PRIORITY' | translate }}</label>
           <select [(ngModel)]="formTicket.priority" name="priority" class="w-full bg-bgMain border border-borderColor rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors">
-            <option value="alta">Alta (Urgent)</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
+            <option value="alta">{{ 'TICKETS.PRIORITY_HIGH' | translate }}</option>
+            <option value="media">{{ 'TICKETS.PRIORITY_MEDIUM' | translate }}</option>
+            <option value="baja">{{ 'TICKETS.PRIORITY_LOW' | translate }}</option>
           </select>
         </div>
 
         <div class="mt-4 flex justify-end gap-3">
-          <button type="button" class="btn bg-white/5 hover:bg-white/10 text-textPrimary" (click)="closeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Crear Ticket</button>
+          <button type="button" class="btn bg-white/5 hover:bg-white/10 text-textPrimary" (click)="closeModal()">{{ 'TICKETS.CANCEL' | translate }}</button>
+          <button type="submit" class="btn btn-primary">{{ 'TICKETS.CREATE_TICKET' | translate }}</button>
         </div>
       </form>
     </div>
@@ -135,39 +135,39 @@
       <div class="p-6">
         <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
           <div>
-            <span class="text-textSecondary block mb-1">Máquina</span>
+            <span class="text-textSecondary block mb-1">{{ 'TICKETS.MACHINE' | translate }}</span>
             <span class="font-semibold text-textPrimary">{{ getMachineName(selectedTicket.machineId) }}</span>
           </div>
           <div>
-            <span class="text-textSecondary block mb-1">Fecha de Creación</span>
+            <span class="text-textSecondary block mb-1">{{ 'TICKETS.CREATION_DATE' | translate }}</span>
             <span class="font-semibold text-textPrimary">{{ selectedTicket.createdAt | date:'short' }}</span>
           </div>
           <div>
-            <span class="text-textSecondary block mb-1">Prioridad</span>
+            <span class="text-textSecondary block mb-1">{{ 'TICKETS.PRIORITY' | translate }}</span>
             <span class="uppercase px-2 py-1 bg-white/5 rounded text-xs font-bold">{{ selectedTicket.priority }}</span>
           </div>
           <div>
-            <span class="text-textSecondary block mb-1">Estado Actual</span>
+            <span class="text-textSecondary block mb-1">{{ 'TICKETS.CURRENT_STATUS' | translate }}</span>
             <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border"
                   [ngClass]="{
                     'text-danger border-danger bg-danger/10': selectedTicket.status === 'open',
                     'text-warning border-warning bg-warning/10': selectedTicket.status === 'progress',
                     'text-success border-success bg-success/10': selectedTicket.status === 'closed'
                   }">
-              {{ selectedTicket.status === 'open' ? 'Abierto' : selectedTicket.status === 'progress' ? 'En Progreso' : 'Cerrado' }}
+              {{ selectedTicket.status === 'open' ? ('TICKETS.OPEN' | translate) : selectedTicket.status === 'progress' ? ('TICKETS.IN_PROGRESS' | translate) : ('TICKETS.CLOSED' | translate) }}
             </span>
           </div>
         </div>
 
         <div class="mb-6">
-          <span class="text-textSecondary block mb-2 text-sm font-semibold">Descripción del Problema</span>
+          <span class="text-textSecondary block mb-2 text-sm font-semibold">{{ 'TICKETS.PROBLEM_DESC' | translate }}</span>
           <div class="bg-bgMain p-4 rounded-lg border border-borderColor/50 text-textPrimary">
-            {{ selectedTicket.description || 'Sin descripción detallada.' }}
+            {{ selectedTicket.description || ('TICKETS.NO_DESC' | translate) }}
           </div>
         </div>
 
         <div class="mb-6">
-          <span class="text-textSecondary block mb-2 text-sm font-semibold">Historial de Notas</span>
+          <span class="text-textSecondary block mb-2 text-sm font-semibold">{{ 'TICKETS.NOTES_HISTORY' | translate }}</span>
           <div class="space-y-3 mb-4">
             @for (note of selectedTicket.notes; track note.date) {
               <div class="bg-white/5 p-3 rounded-lg border border-white/5">
@@ -175,25 +175,25 @@
                 <div class="text-[10px] text-textSecondary mt-2 text-right">{{ note.date | date:'short' }}</div>
               </div>
             } @empty {
-              <p class="text-xs text-textSecondary italic">No hay notas registradas.</p>
+              <p class="text-xs text-textSecondary italic">{{ 'TICKETS.NO_NOTES' | translate }}</p>
             }
           </div>
           
           <div class="flex gap-2">
-            <input type="text" [(ngModel)]="newNote" placeholder="Agregar una nota o actualización..." class="flex-1 bg-bgMain border border-borderColor rounded-lg px-4 py-2 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm">
-            <button class="btn bg-accentPrimary hover:bg-accentHover text-white px-4 py-2 rounded-lg text-sm font-semibold" (click)="addNote()">Agregar</button>
+            <input type="text" [(ngModel)]="newNote" [placeholder]="'TICKETS.ADD_NOTE_HINT' | translate" class="flex-1 bg-bgMain border border-borderColor rounded-lg px-4 py-2 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm">
+            <button class="btn bg-accentPrimary hover:bg-accentHover text-white px-4 py-2 rounded-lg text-sm font-semibold" (click)="addNote()">{{ 'TICKETS.ADD' | translate }}</button>
           </div>
         </div>
 
         <div class="flex justify-between items-center pt-4 border-t border-borderColor gap-2">
           <div class="flex items-center gap-2 sm:gap-3">
-            <label class="text-sm font-semibold text-textSecondary">Estado:</label>
+            <label class="text-sm font-semibold text-textSecondary">{{ 'TICKETS.STATUS' | translate }}</label>
             <select [(ngModel)]="tempStatus" class="bg-bgMain border border-borderColor rounded-lg px-3 h-10 text-textPrimary focus:outline-none focus:border-accentPrimary transition-colors text-sm">
-              <option value="progress">En Progreso</option>
-              <option value="closed">Cerrado</option>
+              <option value="progress">{{ 'TICKETS.IN_PROGRESS' | translate }}</option>
+              <option value="closed">{{ 'TICKETS.CLOSED' | translate }}</option>
             </select>
           </div>
-          <button class="bg-accentPrimary hover:bg-accentHover text-white px-4 sm:px-6 h-10 rounded-lg text-sm font-semibold transition-colors shrink-0" (click)="saveStatus()">Guardar</button>
+          <button class="bg-accentPrimary hover:bg-accentHover text-white px-4 sm:px-6 h-10 rounded-lg text-sm font-semibold transition-colors shrink-0" (click)="saveStatus()">{{ 'TICKETS.SAVE' | translate }}</button>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 <div class="p-6">
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-      <h2 class="text-3xl font-heading font-bold text-textPrimary">Registros Globales</h2>
-      <p class="text-textSecondary mt-2">Visión general del rendimiento financiero de toda la red.</p>
+      <h2 class="text-3xl font-heading font-bold text-textPrimary">{{ 'RECORDS.TITLE' | translate }}</h2>
+      <p class="text-textSecondary mt-2">{{ 'RECORDS.SUBTITLE' | translate }}</p>
     </div>
   </div>
 
@@ -13,7 +13,7 @@
       <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/5 to-transparent group-hover:from-accentPrimary/10 transition-colors"></div>
       <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
         <h3 class="text-textSecondary font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center gap-2">
-          <i-lucide name="calendar" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">Mes Actual (Todas las Ubicaciones)</span>
+          <i-lucide name="calendar" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">{{ 'RECORDS.CURRENT_MONTH' | translate }}</span>
         </h3>
         <div class="hidden sm:flex w-8 h-8 rounded-full bg-accentPrimary/20 items-center justify-center text-accentPrimary shrink-0">
           <i-lucide name="bar-chart-2" class="w-4 h-4"></i-lucide>
@@ -21,11 +21,11 @@
       </div>
       <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         <div>
-          <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal Bruto</div>
+          <div class="text-[10px] text-textSecondary uppercase font-semibold">{{ 'RECORDS.GROSS_SUBTOTAL' | translate }}</div>
           <div class="text-xl sm:text-2xl font-bold text-textPrimary truncate">{{ globalMonthGross | currency }}</div>
         </div>
         <div>
-          <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia Total</div>
+          <div class="text-[10px] text-success/80 uppercase font-semibold">{{ 'RECORDS.TOTAL_PROFIT' | translate }}</div>
           <div class="text-2xl sm:text-4xl font-bold text-success drop-shadow-sm truncate">+{{ globalMonthProfit | currency }}</div>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent group-hover:from-purple-500/10 transition-colors"></div>
       <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
         <h3 class="text-textSecondary font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center gap-2">
-          <i-lucide name="activity" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">Histórico General (Desde el inicio)</span>
+          <i-lucide name="activity" class="w-4 h-4 shrink-0"></i-lucide> <span class="truncate">{{ 'RECORDS.GENERAL_HISTORY' | translate }}</span>
         </h3>
         <div class="hidden sm:flex w-8 h-8 rounded-full bg-purple-500/20 items-center justify-center text-purple-400 shrink-0">
           <i-lucide name="database-backup" class="w-4 h-4"></i-lucide>
@@ -44,11 +44,11 @@
       </div>
       <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         <div>
-          <div class="text-[10px] text-textSecondary uppercase font-semibold">Total Subtotal</div>
+          <div class="text-[10px] text-textSecondary uppercase font-semibold">{{ 'RECORDS.TOTAL_SUBTOTAL' | translate }}</div>
           <div class="text-xl sm:text-2xl font-bold text-textPrimary truncate">{{ globalTotalGross | currency }}</div>
         </div>
         <div>
-          <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia Neta Total</div>
+          <div class="text-[10px] text-success/80 uppercase font-semibold">{{ 'RECORDS.NET_TOTAL_PROFIT' | translate }}</div>
           <div class="text-2xl sm:text-4xl font-bold text-success drop-shadow-sm truncate">+{{ globalTotalProfit | currency }}</div>
         </div>
       </div>
@@ -65,8 +65,8 @@
               <i-lucide name="calendar-clock" class="w-5 h-5"></i-lucide>
             </div>
             <div>
-              <h3 class="text-xl font-heading font-bold text-textPrimary">Historial Mensual Global</h3>
-              <p class="text-sm text-textSecondary">Compara el rendimiento mes a mes.</p>
+              <h3 class="text-xl font-heading font-bold text-textPrimary">{{ 'RECORDS.GLOBAL_MONTHLY_HISTORY' | translate }}</h3>
+              <p class="text-sm text-textSecondary">{{ 'RECORDS.COMPARE_MONTH' | translate }}</p>
             </div>
           </div>
           <button class="btn-icon" (click)="isMonthlyModalOpen = false"><i-lucide name="x"></i-lucide></button>
@@ -82,11 +82,11 @@
                 </div>
                 <div class="relative z-10 grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                   <div>
-                    <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                    <div class="text-[10px] text-textSecondary uppercase font-semibold">{{ 'RECORDS.SUBTOTAL' | translate }}</div>
                     <div class="font-bold text-textPrimary">{{ gm.totalGross | currency }}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                    <div class="text-[10px] text-success/80 uppercase font-semibold">{{ 'RECORDS.PROFIT' | translate }}</div>
                     <div class="font-bold text-success text-lg drop-shadow-sm">{{ gm.totalOwnerProfit | currency }}</div>
                   </div>
                 </div>
@@ -107,8 +107,8 @@
               <i-lucide name="calendar-days" class="w-5 h-5"></i-lucide>
             </div>
             <div>
-              <h3 class="text-xl font-heading font-bold text-textPrimary">Historial Anual Global</h3>
-              <p class="text-sm text-textSecondary">Compara el rendimiento año a año.</p>
+              <h3 class="text-xl font-heading font-bold text-textPrimary">{{ 'RECORDS.GLOBAL_YEARLY_HISTORY' | translate }}</h3>
+              <p class="text-sm text-textSecondary">{{ 'RECORDS.COMPARE_YEAR' | translate }}</p>
             </div>
           </div>
           <button class="btn-icon" (click)="isYearlyModalOpen = false"><i-lucide name="x"></i-lucide></button>
@@ -120,15 +120,15 @@
               <div class="glass-panel p-5 border border-borderColor/50 hover:border-success hover:shadow-[0_4px_20px_-5px_rgba(16,185,129,0.2)] transition-all duration-300 cursor-default relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-br from-success/0 to-success/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500"></div>
                 <div class="relative z-10 text-sm font-bold text-textSecondary uppercase tracking-wider flex items-center gap-2 mb-3">
-                  <i-lucide name="calendar" class="w-4 h-4"></i-lucide> Año {{ gy.year }}
+                  <i-lucide name="calendar" class="w-4 h-4"></i-lucide> {{ 'RECORDS.YEAR' | translate }} {{ gy.year }}
                 </div>
                 <div class="relative z-10 grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
                   <div>
-                    <div class="text-[10px] text-textSecondary uppercase font-semibold">Subtotal</div>
+                    <div class="text-[10px] text-textSecondary uppercase font-semibold">{{ 'RECORDS.SUBTOTAL' | translate }}</div>
                     <div class="font-bold text-textPrimary">{{ gy.totalGross | currency }}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] text-success/80 uppercase font-semibold">Ganancia</div>
+                    <div class="text-[10px] text-success/80 uppercase font-semibold">{{ 'RECORDS.PROFIT' | translate }}</div>
                     <div class="font-bold text-success text-lg drop-shadow-sm">{{ gy.totalOwnerProfit | currency }}</div>
                   </div>
                 </div>

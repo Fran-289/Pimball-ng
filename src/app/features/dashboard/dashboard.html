@@ -1,7 +1,7 @@
 <div class="p-6">
   <div class="mb-8">
-    <h2 class="text-3xl font-heading font-bold text-textPrimary">Rendimiento Operativo Global</h2>
-    <p class="text-textSecondary mt-2">Sistema de Gestión Inteligente para máquinas Pinball FDNO by Frank</p>
+    <h2 class="text-3xl font-heading font-bold text-textPrimary">{{ 'DASHBOARD.TITLE' | translate }}</h2>
+    <p class="text-textSecondary mt-2">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
   </div>
 
   <div class="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 mb-8">
@@ -9,7 +9,7 @@
     <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(99,102,241,0.5)] hover:border-accentPrimary transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/inventory">
       <div class="absolute inset-0 bg-gradient-to-r from-accentPrimary/0 via-accentPrimary/5 to-accentPrimary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
       <div class="order-2 xl:order-1">
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-accentPrimary transition-colors truncate">Máquinas</div>
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-accentPrimary transition-colors truncate">{{ 'DASHBOARD.MACHINES' | translate }}</div>
         <div class="text-lg sm:text-2xl md:text-3xl font-bold text-textPrimary">{{ statMachines }}</div>
       </div>
       <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-accentPrimary/20 flex items-center justify-center text-accentPrimary group-hover:scale-110 group-hover:bg-accentPrimary group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
@@ -20,7 +20,7 @@
     <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.5)] hover:border-success transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/cuts">
       <div class="absolute inset-0 bg-gradient-to-r from-success/0 via-success/5 to-success/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
       <div class="order-2 xl:order-1">
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-success transition-colors truncate">Ubicaciones</div>
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-success transition-colors truncate">{{ 'DASHBOARD.LOCATIONS' | translate }}</div>
         <div class="text-lg sm:text-2xl md:text-3xl font-bold text-success">{{ statLocations }}</div>
       </div>
       <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-success/20 flex items-center justify-center text-success group-hover:scale-110 group-hover:bg-success group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
@@ -31,7 +31,7 @@
     <div class="glass-panel flex flex-col xl:flex-row items-center justify-center xl:justify-between text-center xl:text-left cursor-pointer group hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(239,68,68,0.5)] hover:border-danger transition-all duration-300 relative overflow-hidden p-3 sm:p-6 gap-2 xl:gap-0" routerLink="/tickets">
       <div class="absolute inset-0 bg-gradient-to-r from-danger/0 via-danger/5 to-danger/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
       <div class="order-2 xl:order-1">
-        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-danger transition-colors truncate">Tickets</div>
+        <div class="text-textSecondary font-semibold uppercase tracking-wide text-[9px] sm:text-xs mb-1 group-hover:text-danger transition-colors truncate">{{ 'DASHBOARD.TICKETS' | translate }}</div>
         <div class="text-lg sm:text-2xl md:text-3xl font-bold text-danger">{{ statTickets }}</div>
       </div>
       <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-danger/20 flex items-center justify-center text-danger group-hover:scale-110 group-hover:bg-danger group-hover:text-white transition-all order-1 xl:order-2 shrink-0 mx-auto xl:mx-0">
@@ -50,7 +50,7 @@
           <div class="p-2 bg-warning/20 rounded-lg shadow-inner">
             <i-lucide name="calendar-clock" class="text-warning w-4 h-4"></i-lucide>
           </div>
-          Próximos Cortes
+          {{ 'DASHBOARD.UPCOMING_CUTS' | translate }}
         </h3>
       </div>
       
@@ -63,7 +63,7 @@
                </div>
                <div>
                  <div class="font-bold text-textPrimary text-sm lg:text-base truncate max-w-[150px]">{{ uc.locationName }}</div>
-                 <div class="text-[10px] text-textSecondary">Sig. cobro</div>
+                 <div class="text-[10px] text-textSecondary">{{ 'DASHBOARD.NEXT_PAYMENT' | translate }}</div>
                </div>
             </div>
             <div class="shrink-0 bg-warning/10 border border-warning/30 px-2 py-1 rounded-lg">
@@ -75,7 +75,7 @@
         } @empty {
           <div class="flex h-full flex-col items-center justify-center py-10 opacity-60">
             <i-lucide name="calendar-check" class="w-12 h-12 text-textSecondary mb-4"></i-lucide>
-            <p class="text-sm text-textSecondary italic text-center">No hay próximos cortes.</p>
+            <p class="text-sm text-textSecondary italic text-center">{{ 'DASHBOARD.NO_CUTS' | translate }}</p>
           </div>
         }
       </div>
@@ -90,7 +90,7 @@
           <div class="p-2 bg-accentPrimary/20 rounded-lg shadow-inner">
             <i-lucide name="activity" class="text-accentPrimary w-4 h-4"></i-lucide>
           </div>
-          Actividad Reciente
+          {{ 'DASHBOARD.RECENT_ACTIVITY' | translate }}
         </h3>
       </div>
       
@@ -103,10 +103,10 @@
               </div>
               <div>
                 <div class="font-bold flex items-center gap-2 group-hover:text-accentPrimary transition-colors" [ngClass]="item.type === 'cut' ? 'text-success drop-shadow-sm' : 'text-textPrimary'">
-                  {{ item.type === 'cut' ? 'Ingreso: ' + getLocationName(item.locationId) : 'Ticket: ' + item.title }}
+                  {{ item.type === 'cut' ? ('DASHBOARD.INCOME' | translate) + getLocationName(item.locationId) : ('DASHBOARD.TICKET' | translate) + item.title }}
                 </div>
                 <div class="text-xs text-textSecondary mt-1 font-medium">
-                  {{ item.type === 'cut' ? (item.displayId || 'Corte') + ' • ' + (item.date | date:'shortDate') : 'MQ: ' + getMachineName(item.machineId) + ' • ' + (item.createdAt | date:'shortDate') }}
+                  {{ item.type === 'cut' ? (item.displayId || ('DASHBOARD.CUT' | translate)) + ' • ' + (item.date | date:'shortDate') : ('DASHBOARD.MQ' | translate) + getMachineName(item.machineId) + ' • ' + (item.createdAt | date:'shortDate') }}
                 </div>
               </div>
             </div>
@@ -121,12 +121,12 @@
                      'bg-warning/10 text-warning border border-warning/30': item.status === 'progress',
                      'bg-success/10 text-success border border-success/30': item.status === 'closed'
                    }">
-                {{ item.status === 'open' ? 'Abierto' : item.status === 'progress' ? 'Progreso' : 'Cerrado' }}
+                {{ item.status === 'open' ? ('DASHBOARD.OPEN' | translate) : item.status === 'progress' ? ('DASHBOARD.PROGRESS' | translate) : ('DASHBOARD.CLOSED' | translate) }}
               </div>
             }
           </div>
         } @empty {
-          <p class="text-sm text-textSecondary italic text-center py-8 opacity-60">Aún no hay actividad registrada.</p>
+          <p class="text-sm text-textSecondary italic text-center py-8 opacity-60">{{ 'DASHBOARD.NO_ACTIVITY' | translate }}</p>
         }
       </div>
     </div>
@@ -140,7 +140,7 @@
           <div class="p-2 bg-success/20 rounded-lg shadow-inner">
             <i-lucide name="bar-chart-2" class="text-success w-4 h-4"></i-lucide>
           </div>
-          Recaudación (6 Meses)
+          {{ 'DASHBOARD.CHART_TITLE' | translate }}
         </h3>
       </div>
 
@@ -184,7 +184,7 @@
         } @empty {
           <div class="w-full h-full flex flex-col items-center justify-center text-textSecondary opacity-60 z-10 relative">
             <i-lucide name="bar-chart-2" class="w-10 h-10 mb-2"></i-lucide>
-            <span class="text-xs">Sin datos recientes</span>
+            <span class="text-xs">{{ 'DASHBOARD.NO_CHART_DATA' | translate }}</span>
           </div>
         }
       </div>

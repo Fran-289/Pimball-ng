@@ -4,11 +4,12 @@ import { ExportService } from '../../core/services/export.service';
 import { SecurityService } from '../../core/services/security.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-backups',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule],
+  imports: [LucideAngularModule, CommonModule, TranslatePipe],
   templateUrl: './backups.html',
   styleUrl: './backups.css',
 })

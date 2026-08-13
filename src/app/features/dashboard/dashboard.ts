@@ -3,11 +3,12 @@ import { DataService } from '../../core/services/data.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule, RouterModule],
+  imports: [LucideAngularModule, CommonModule, RouterModule, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
